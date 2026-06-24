@@ -1,0 +1,231 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submit Content — Osoyoos &amp; District Arts Council</title>
+  <meta name="description" content="Submit your event, exhibition, artwork, or announcement to the Osoyoos &amp; District Arts Council for review and publication.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <a href="https://osoyoosartscouncil.com" target="_blank" rel="noopener" class="brand-link">
+          <span class="brand-name">ODAC</span>
+          <span class="brand-tagline">Osoyoos &amp; District Arts Council</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- FORM VIEW -->
+    <section id="form-view" class="form-section">
+      <div class="form-container">
+
+        <div class="form-header">
+          <h1 class="form-title">Share Something With ODAC</h1>
+          <p class="form-subtitle">
+            Submit your event, exhibition, artwork, or announcement.
+            Our team reviews every submission within 48 hours.
+          </p>
+        </div>
+
+        <form id="submission-form" novalidate>
+
+          <!-- Group -->
+          <div class="field-group">
+            <label class="field-label" for="group_name">
+              Your Group
+              <span class="field-badge field-badge--required">Required</span>
+            </label>
+            <select id="group_name" name="group_name" class="field-select" required>
+              <option value="">— Select your group —</option>
+              <option value="Artists on Main">Artists on Main</option>
+              <option value="Best Cellar Books &amp; Tours">Best Cellar Books &amp; Tours</option>
+              <option value="OASIS Theatre Group">OASIS Theatre Group</option>
+              <option value="Okanagan Art Gallery">Okanagan Art Gallery</option>
+              <option value="Osoyoos Carvers">Osoyoos Carvers</option>
+              <option value="Osoyoos Desert Centre">Osoyoos Desert Centre</option>
+              <option value="Osoyoos Elks #436">Osoyoos Elks #436</option>
+              <option value="Osoyoos Festival Society">Osoyoos Festival Society</option>
+              <option value="Osoyoos Museum &amp; Archives">Osoyoos Museum &amp; Archives</option>
+              <option value="Osoyoos Music in the Park">Osoyoos Music in the Park</option>
+              <option value="Osoyoos Photography Club">Osoyoos Photography Club</option>
+              <option value="Osoyoos Potters">Osoyoos Potters</option>
+              <option value="Osoyoos Quilters Guild">Osoyoos Quilters Guild</option>
+              <option value="Rock Creek Fall Fair Assn">Rock Creek Fall Fair Assn</option>
+              <option value="Rumplestiltskein Fibre Arts Guild">Rumplestiltskein Fibre Arts Guild</option>
+              <option value="The Similkameen Country Development Association">The Similkameen Country Development Association</option>
+              <option value="Wayside Books &amp; Select Art">Wayside Books &amp; Select Art</option>
+              <option value="Wide Arts National Association (WANA)">Wide Arts National Association (WANA)</option>
+            </select>
+          </div>
+
+          <!-- Email -->
+          <div class="field-group">
+            <label class="field-label" for="submitter_email">
+              Your Email
+              <span class="field-badge field-badge--required">Required</span>
+            </label>
+            <p class="field-hint">We will send you a confirmation right away, and reach out here if we need more information.</p>
+            <input type="email" id="submitter_email" name="submitter_email"
+                   class="field-input" placeholder="yourname@example.com"
+                   autocomplete="email" required>
+          </div>
+
+          <!-- Content Type -->
+          <div class="field-group">
+            <fieldset class="radio-fieldset">
+              <legend class="field-label">
+                What Are You Sharing?
+                <span class="field-badge field-badge--required">Required</span>
+              </legend>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="content_type" value="event" required>
+                  <span class="radio-label">
+                    <span class="radio-title">Event</span>
+                    <span class="radio-desc">A performance, workshop, or community gathering</span>
+                  </span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="content_type" value="exhibition">
+                  <span class="radio-label">
+                    <span class="radio-title">Exhibition</span>
+                    <span class="radio-desc">An art show, gallery display, or visual exhibit</span>
+                  </span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="content_type" value="artwork">
+                  <span class="radio-label">
+                    <span class="radio-title">Artwork</span>
+                    <span class="radio-desc">A photo, painting, sculpture, or creative piece to share</span>
+                  </span>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="content_type" value="announcement">
+                  <span class="radio-label">
+                    <span class="radio-title">Announcement</span>
+                    <span class="radio-desc">News, updates, or information about your group</span>
+                  </span>
+                </label>
+              </div>
+            </fieldset>
+          </div>
+
+          <!-- Title -->
+          <div class="field-group">
+            <label class="field-label" for="title">
+              Title
+              <span class="field-badge field-badge--required">Required</span>
+            </label>
+            <p class="field-hint">A clear, short title for what you are sharing.</p>
+            <input type="text" id="title" name="title" class="field-input"
+                   placeholder="e.g. Summer Pottery Workshop — July 2026"
+                   required maxlength="200" autocomplete="off">
+          </div>
+
+          <!-- Description -->
+          <div class="field-group">
+            <label class="field-label" for="description">
+              Description
+              <span class="field-badge field-badge--required">Required</span>
+            </label>
+            <p class="field-hint">
+              Write it as you would like it to appear on Facebook — include dates, times,
+              location, and key details. We may make small edits before posting.
+            </p>
+            <textarea id="description" name="description" class="field-textarea"
+                      rows="6" required maxlength="2000"
+                      placeholder="Join us for a summer pottery workshop at the Osoyoos Community Centre on Saturday July 12th from 10am to 2pm..."></textarea>
+            <span class="char-count"><span id="char-count">0</span> / 2000</span>
+          </div>
+
+          <!-- File Upload -->
+          <div class="field-group">
+            <div class="field-label">
+              Photos or Files
+              <span class="field-badge field-badge--optional">Optional</span>
+            </div>
+            <p class="field-hint">JPG, PNG, or PDF. Up to 3 files, 10 MB each.</p>
+            <div class="file-drop-zone" id="file-drop-zone">
+              <input type="file" id="files" name="files"
+                     accept=".jpg,.jpeg,.png,.pdf"
+                     multiple class="file-input"
+                     aria-label="Attach photos or PDF files">
+              <div class="file-drop-content">
+                <div class="file-drop-icon" aria-hidden="true">📎</div>
+                <div class="file-drop-text">
+                  <strong>Click to choose files</strong>
+                  <span>or drag and drop here</span>
+                </div>
+                <div class="file-drop-types">JPG · PNG · PDF · Max 10 MB each · Up to 3 files</div>
+              </div>
+            </div>
+            <div id="file-list" class="file-list" hidden aria-live="polite"></div>
+          </div>
+
+          <!-- Inline error -->
+          <div id="form-error" class="form-error" hidden role="alert" aria-live="assertive"></div>
+
+          <!-- Submit -->
+          <div class="form-actions">
+            <button type="submit" id="submit-btn" class="btn-submit">
+              <span class="btn-text">Send to ODAC</span>
+              <span class="btn-loading" hidden aria-live="polite">
+                <span class="spinner" aria-hidden="true"></span>
+                Sending...
+              </span>
+            </button>
+            <p class="form-legal">
+              Your submission will be reviewed by ODAC within 48 hours.
+              We may edit it slightly for social media before publishing.
+            </p>
+          </div>
+
+        </form>
+      </div>
+    </section>
+
+    <!-- SUCCESS VIEW -->
+    <section id="success-view" class="success-section" hidden aria-live="polite">
+      <div class="success-container">
+        <div class="success-icon" aria-hidden="true">✅</div>
+        <h1 class="success-title">Thank you!</h1>
+        <p class="success-message">
+          We have received your submission and will review it within
+          <strong>48 hours</strong>.
+        </p>
+        <p class="success-sub">
+          A confirmation has been sent to your email.
+          If we need anything, we will reach out there.
+        </p>
+        <div class="success-card" id="success-summary"></div>
+        <button class="btn-another" onclick="resetForm()">Submit something else</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>
+        Osoyoos &amp; District Arts Council &nbsp;&middot;&nbsp;
+        <a href="https://osoyoosartscouncil.com" target="_blank" rel="noopener">osoyoosartscouncil.com</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="form.js"></script>
+
+</body>
+</html>
