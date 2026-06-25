@@ -124,7 +124,9 @@ body {
 }
 
 .form-header {
-  background: linear-gradient(135deg, #057AFF 0%, #3395FF 100%);
+  background: linear-gradient(135deg, #033E9E, #0562CC, #057AFF, #0562CC);
+  background-size: 300% 300%;
+  animation: header-flow 8s ease infinite;
   padding: 28px 32px 24px;
   border-bottom: 3px solid var(--gold);
 }
@@ -599,6 +601,13 @@ form {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+/* -- Form header animated gradient ----------------------------- */
+@keyframes header-flow {
+  0%   { background-position: 0%   50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0%   50%; }
 }
 
 /* -- Spinner --------------------------------------------------- */
