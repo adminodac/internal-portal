@@ -1,10 +1,10 @@
 ﻿/* ================================================================
-   ODAC Internal Portal â€” style.css
+   ODAC Internal Portal -- style.css
    Phase 1: Public Intake Form
-   Design: Block Warmth Hybrid â€” ODAC teal + warm gold
+   Design: Block Warmth Hybrid -- ODAC teal + warm gold
    ================================================================ */
 
-/* â”€â”€ Custom Properties â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- Custom Properties ----------------------------------------- */
 :root {
   --teal-dark:     #1f6b6b;
   --teal-mid:      #2a8a8a;
@@ -26,9 +26,27 @@
   --radius-sm:     5px;
   --shadow-card:   0 1px 3px rgba(0,0,0,0.07), 0 6px 16px rgba(0,0,0,0.07);
   --transition:    0.15s ease;
+
+  /* -- Interaction accent (micro-interactions) -- */
+  --accent:        #1D9E75;
+  --accent-dark:   #0F6E56;
+  --accent-light:  #E1F5EE;
+  --accent-bg:     #FAFFFE;
+  --invalid:       #E24B4A;
+  --warn:          #BA7517;
 }
 
-/* â”€â”€ Reset & Base â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- prefers-reduced-motion ------------------------------------ */
+/* All transitions/animations become instant for users who need it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0ms !important;
+    animation-duration:  0ms !important;
+    animation-delay:     0ms !important;
+  }
+}
+
+/* -- Reset & Base ---------------------------------------------- */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -51,7 +69,7 @@ body {
   flex-direction: column;
 }
 
-/* â”€â”€ Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- Header ---------------------------------------------------- */
 .site-header {
   background: var(--teal-dark);
   border-bottom: 3px solid var(--gold);
@@ -88,16 +106,23 @@ body {
   letter-spacing: 0.3px;
 }
 
-/* â”€â”€ Main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- Main ------------------------------------------------------ */
 .main {
   flex: 1;
   padding: 32px 20px 64px;
 }
 
-/* â”€â”€ Form Section â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- Form Section ---------------------------------------------- */
 .form-section {
   max-width: 660px;
   margin: 0 auto;
+  /* fade-out on submit success */
+  transition: opacity 250ms ease;
+}
+
+.form-section.is-exiting {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .form-container {
@@ -133,7 +158,7 @@ form {
   padding: 28px 32px 32px;
 }
 
-/* â”€â”€ Field Groups â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- Field Groups ---------------------------------------------- */
 .field-group {
   margin-bottom: 28px;
 }
@@ -176,7 +201,7 @@ form {
   line-height: 1.55;
 }
 
-/* â”€â”€ Text Inputs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- Text Inputs ----------------------------------------------- */
 .field-input,
 .field-select,
 .field-textarea {
@@ -188,8 +213,7 @@ form {
   border: 2px solid var(--border);
   border-radius: var(--radius-sm);
   padding: 12px 14px;
-  transition: border-color var(--transition), box-shadow var(--transition),
-              background var(--transition);
+  transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
   appearance: none;
   -webkit-appearance: none;
 }
@@ -204,8 +228,8 @@ form {
 .field-select:focus,
 .field-textarea:focus {
   outline: none;
-  border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(42,138,138,0.18);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(29,158,117,0.14);
   background: #fff;
 }
 
@@ -214,7 +238,7 @@ form {
   color: #b0a898;
 }
 
-/* â”€â”€ Select â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- Select ---------------------------------------------------- */
 .field-select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -223,13 +247,20 @@ form {
   cursor: pointer;
 }
 
-/* â”€â”€ Textarea â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* Dropdown: group selected -- border turns accent + checkmark arrow */
+.field-select.select--filled {
+  border-color: var(--accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231D9E75' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+}
+
+/* -- Textarea -------------------------------------------------- */
 .field-textarea {
   resize: vertical;
   min-height: 130px;
   line-height: 1.6;
 }
 
+/* -- Char counter ---------------------------------------------- */
 .char-count {
   display: block;
   text-align: right;
@@ -237,51 +268,106 @@ form {
   color: var(--text-muted);
   margin-top: 5px;
   font-variant-numeric: tabular-nums;
+  transition: color 200ms ease;
+}
+.char-count--mid  { color: var(--accent); }
+.char-count--warn { color: var(--warn); }
+.char-count--danger { color: var(--invalid); font-weight: 600; }
+
+/* -- Email validation states ----------------------------------- */
+.field-input.input--valid {
+  border-color: var(--accent);
+}
+.field-input.input--invalid {
+  border-color: var(--invalid);
+  /* Non-color indicator: slightly inset shadow so color-blind users see it */
+  box-shadow: inset 3px 0 0 var(--invalid);
 }
 
-/* â”€â”€ Radio Group â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- Title / Description: left accent line --------------------- */
+/* Uses box-shadow so it never causes reflow (compositor-only) */
+.field-input.field--active,
+.field-textarea.field--active {
+  border-color: var(--accent);
+  box-shadow: -3px 0 0 var(--accent), 0 0 0 3px rgba(29,158,117,0.1);
+  background-color: var(--accent-bg);
+}
+
+.field-input.field--has-content,
+.field-textarea.field--has-content {
+  box-shadow: -3px 0 0 var(--accent);
+}
+
+/* -- Radio Group: pill grid ------------------------------------ */
 .radio-fieldset {
   border: none;
 }
 
+/* Desktop: 4 pills in a single row */
 .radio-group {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
   margin-top: 8px;
 }
 
+/* Mobile: 2x2 grid */
+@media (max-width: 600px) {
+  .radio-group {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .radio-option {
   display: flex;
-  align-items: flex-start;
-  gap: 13px;
-  padding: 14px 16px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 14px 10px;
   background: #fdfcfa;
   border: 2px solid var(--border);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: border-color var(--transition), background var(--transition);
+  transition: border-color 200ms ease, background-color 200ms ease, transform 150ms ease;
   user-select: none;
+  text-align: center;
+  min-height: 72px;
 }
 
 .radio-option:hover {
-  border-color: var(--teal-mid);
-  background: var(--teal-xlight);
+  border-color: var(--accent);
+  background: var(--accent-light);
 }
 
+/* Hide native radio -- kept in DOM for a11y / keyboard nav */
 .radio-option input[type="radio"] {
-  margin-top: 3px;
-  width: 19px;
-  height: 19px;
-  accent-color: var(--teal-mid);
-  flex-shrink: 0;
-  cursor: pointer;
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
 }
 
-/* Highlight the selected option */
+/* Selected pill: filled teal */
 .radio-option:has(input:checked) {
-  border-color: var(--teal-mid);
-  background: var(--teal-light);
+  border-color: var(--accent);
+  background: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(29,158,117,0.25);
+}
+
+.radio-option:has(input:checked) .radio-title {
+  color: #ffffff;
+}
+
+.radio-option:has(input:checked) .radio-title::before {
+  content: "\2713  ";
+  font-weight: 400;
+}
+
+.radio-option:has(input:checked) .radio-desc {
+  color: rgba(255,255,255,0.78);
 }
 
 .radio-label {
@@ -297,13 +383,17 @@ form {
   line-height: 1.3;
 }
 
+/* Description visible on mobile 2x2; hidden on desktop 1x4 (too narrow) */
 .radio-desc {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: var(--text-muted);
-  line-height: 1.4;
+  line-height: 1.35;
+}
+@media (min-width: 601px) {
+  .radio-desc { display: none; }
 }
 
-/* â”€â”€ File Upload Zone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- File Upload Zone ------------------------------------------ */
 .file-drop-zone {
   position: relative;
   border: 2px dashed var(--border);
@@ -312,13 +402,25 @@ form {
   text-align: center;
   background: #fdfcfa;
   cursor: pointer;
-  transition: border-color var(--transition), background var(--transition);
+  transition: border-color 200ms ease, background-color 200ms ease;
 }
 
 .file-drop-zone:hover,
 .file-drop-zone.drag-over {
-  border-color: var(--teal-mid);
-  background: var(--teal-xlight);
+  border-color: var(--accent);
+  background: var(--accent-light);
+}
+
+/* Icon bounce on drag-over -- confirms "you can drop here" */
+@keyframes bounce-icon {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+.file-drop-zone.drag-over .file-drop-icon {
+  animation: bounce-icon 300ms ease;
+  display: inline-block;
 }
 
 .file-input {
@@ -367,7 +469,7 @@ form {
   margin-top: 2px;
 }
 
-/* â”€â”€ File List â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- File List ------------------------------------------------- */
 .file-list {
   margin-top: 12px;
   display: flex;
@@ -375,19 +477,27 @@ form {
   gap: 8px;
 }
 
+/* Fade-in when file is added -- confirms "file received" */
+@keyframes fadein-up {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 .file-item {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
-  background: var(--teal-light);
+  background: var(--accent-light);
+  border-left: 3px solid var(--accent);
   border-radius: var(--radius-sm);
   font-size: 0.82rem;
+  animation: fadein-up 200ms ease;
 }
 
 .file-item-name {
   flex: 1;
-  color: var(--teal-dark);
+  color: var(--accent-dark);
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -411,14 +521,14 @@ form {
   line-height: 1;
   flex-shrink: 0;
   border-radius: 3px;
-  transition: background var(--transition);
+  transition: background-color 150ms ease;
 }
 
 .file-item-remove:hover {
   background: rgba(185,28,28,0.1);
 }
 
-/* â”€â”€ Form Error â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- Form Error ------------------------------------------------ */
 .form-error {
   display: flex;
   align-items: flex-start;
@@ -435,13 +545,23 @@ form {
 }
 
 .form-error::before {
-  content: "âš ";
-  font-size: 1rem;
+  content: "!";
+  font-size: 0.85rem;
+  font-weight: 700;
   flex-shrink: 0;
   margin-top: 1px;
+  width: 18px;
+  height: 18px;
+  background: var(--error-text);
+  color: white;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
-/* â”€â”€ Submit Button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- Submit Button --------------------------------------------- */
 .form-actions {
   border-top: 1px solid var(--border);
   padding-top: 24px;
@@ -454,31 +574,32 @@ form {
   font-size: 1.05rem;
   font-weight: 600;
   font-family: inherit;
-  background: var(--gold);
-  color: #3d2a00;
+  background: var(--accent);
+  color: #ffffff;
   border: none;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background var(--transition), transform 0.1s, box-shadow var(--transition);
+  transition: background-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 2px 6px rgba(212,168,67,0.3);
+  box-shadow: 0 2px 6px rgba(29,158,117,0.28);
 }
 
 .btn-submit:hover:not(:disabled) {
-  background: var(--gold-deep);
-  box-shadow: 0 4px 12px rgba(212,168,67,0.35);
+  background: var(--accent-dark);
+  transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(29,158,117,0.32);
 }
 
 .btn-submit:active:not(:disabled) {
-  transform: translateY(1px);
+  transform: translateY(1px) scale(1);
   box-shadow: none;
 }
 
 .btn-submit:disabled {
-  opacity: 0.6;
+  opacity: 0.65;
   cursor: not-allowed;
 }
 
@@ -489,12 +610,12 @@ form {
   gap: 8px;
 }
 
-/* â”€â”€ Spinner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- Spinner --------------------------------------------------- */
 .spinner {
   width: 17px;
   height: 17px;
-  border: 2.5px solid rgba(61,42,0,0.25);
-  border-top-color: #3d2a00;
+  border: 2.5px solid rgba(255,255,255,0.3);
+  border-top-color: #ffffff;
   border-radius: 50%;
   animation: spin 0.65s linear infinite;
   flex-shrink: 0;
@@ -504,7 +625,7 @@ form {
   to { transform: rotate(360deg); }
 }
 
-/* â”€â”€ Legal footnote â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- Legal footnote -------------------------------------------- */
 .form-legal {
   font-size: 0.75rem;
   color: var(--text-muted);
@@ -513,10 +634,17 @@ form {
   line-height: 1.55;
 }
 
-/* â”€â”€ Success View â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- Success View ---------------------------------------------- */
 .success-section {
   max-width: 660px;
   margin: 0 auto;
+  /* Start invisible; JS adds .is-visible to fade in */
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+.success-section.is-visible {
+  opacity: 1;
 }
 
 .success-container {
@@ -525,26 +653,42 @@ form {
   box-shadow: var(--shadow-card);
   padding: 52px 40px;
   text-align: center;
-  border-top: 4px solid var(--gold);
+  border-top: 4px solid var(--accent);
 }
 
+/* Circle checkmark -- replaces emoji */
 .success-icon {
-  font-size: 3.2rem;
+  margin-bottom: 22px;
+  display: flex;
+  justify-content: center;
+}
+
+.success-check-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 2rem;
   line-height: 1;
-  margin-bottom: 18px;
+  box-shadow: 0 4px 16px rgba(29,158,117,0.28);
 }
 
 .success-title {
   font-family: 'Lora', Georgia, serif;
-  font-size: 1.9rem;
+  font-size: 1.7rem;
   color: var(--teal-dark);
-  margin-bottom: 14px;
+  margin-bottom: 12px;
+  line-height: 1.25;
 }
 
 .success-message {
-  font-size: 1.05rem;
+  font-size: 1rem;
   color: var(--text);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   line-height: 1.6;
 }
 
@@ -553,6 +697,11 @@ form {
   color: var(--text-muted);
   margin-bottom: 28px;
   line-height: 1.5;
+}
+
+.success-email-highlight {
+  font-weight: 600;
+  color: var(--accent-dark);
 }
 
 .success-card {
@@ -568,23 +717,23 @@ form {
 }
 
 .btn-another {
-  background: var(--teal-light);
-  border: 2px solid var(--teal-mid);
-  color: var(--teal-dark);
+  background: var(--accent-light);
+  border: 2px solid var(--accent);
+  color: var(--accent-dark);
   font-size: 0.92rem;
   font-weight: 600;
   font-family: inherit;
   padding: 12px 30px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background var(--transition);
+  transition: background-color 150ms ease;
 }
 
 .btn-another:hover {
-  background: #c8e8e8;
+  background: #c0e9d8;
 }
 
-/* â”€â”€ Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- Footer ---------------------------------------------------- */
 .site-footer {
   background: var(--teal-dark);
   border-top: 1px solid rgba(255,255,255,0.08);
@@ -609,7 +758,7 @@ form {
   text-decoration: underline;
 }
 
-/* â”€â”€ Responsive â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* -- Responsive ------------------------------------------------ */
 @media (max-width: 600px) {
   html { font-size: 17px; }
 
@@ -619,9 +768,7 @@ form {
   form { padding: 22px 20px 26px; }
 
   .success-container { padding: 36px 22px; }
-  .success-title     { font-size: 1.6rem; }
-
-  .radio-option { padding: 12px 13px; }
+  .success-title     { font-size: 1.5rem; }
 }
 
 @media (max-width: 380px) {
@@ -629,4 +776,3 @@ form {
   .header-inner { padding: 12px 14px; }
   .brand-tagline { display: none; }
 }
-
