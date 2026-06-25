@@ -28,10 +28,10 @@
   --transition:    0.15s ease;
 
   /* -- Interaction accent (micro-interactions) -- */
-  --accent:        #1D9E75;
-  --accent-dark:   #0F6E56;
-  --accent-light:  #E1F5EE;
-  --accent-bg:     #FAFFFE;
+  --accent:        #057AFF;
+  --accent-dark:   #0562CC;
+  --accent-light:  #EBF3FF;
+  --accent-bg:     #F0F6FF;
   --invalid:       #E24B4A;
   --warn:          #BA7517;
 }
@@ -60,7 +60,7 @@ html {
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Roboto', sans-serif;
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
@@ -86,24 +86,15 @@ body {
 }
 
 .brand-link {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 12px;
+  display: inline-block;
   text-decoration: none;
+  line-height: 0;
 }
 
-.brand-name {
-  font-family: 'Lora', Georgia, serif;
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: #ffffff;
-  letter-spacing: 0.5px;
-}
-
-.brand-tagline {
-  font-size: 0.7rem;
-  color: #9fd4d4;
-  letter-spacing: 0.3px;
+.brand-logo {
+  max-width: 200px;
+  height: auto;
+  display: block;
 }
 
 /* -- Main ------------------------------------------------------ */
@@ -229,7 +220,7 @@ form {
 .field-textarea:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(29,158,117,0.14);
+  box-shadow: 0 0 0 3px rgba(5,122,255,0.14);
   background: #fff;
 }
 
@@ -250,7 +241,7 @@ form {
 /* Dropdown: group selected -- border turns accent + checkmark arrow */
 .field-select.select--filled {
   border-color: var(--accent);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231D9E75' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23057AFF' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
 }
 
 /* -- Textarea -------------------------------------------------- */
@@ -289,7 +280,7 @@ form {
 .field-input.field--active,
 .field-textarea.field--active {
   border-color: var(--accent);
-  box-shadow: -3px 0 0 var(--accent), 0 0 0 3px rgba(29,158,117,0.1);
+  box-shadow: -3px 0 0 var(--accent), 0 0 0 3px rgba(5,122,255,0.1);
   background-color: var(--accent-bg);
 }
 
@@ -352,9 +343,9 @@ form {
 /* Selected pill: filled teal */
 .radio-option:has(input:checked) {
   border-color: var(--accent);
-  background: var(--accent);
+  background: var(--accent-dark);
   transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(29,158,117,0.25);
+  box-shadow: 0 3px 8px rgba(5,122,255,0.25);
 }
 
 .radio-option:has(input:checked) .radio-title {
@@ -574,7 +565,7 @@ form {
   font-size: 1.05rem;
   font-weight: 600;
   font-family: inherit;
-  background: var(--accent);
+  background: var(--accent-dark);
   color: #ffffff;
   border: none;
   border-radius: var(--radius-sm);
@@ -584,13 +575,13 @@ form {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  box-shadow: 0 2px 6px rgba(29,158,117,0.28);
+  box-shadow: 0 2px 6px rgba(5,122,255,0.28);
 }
 
 .btn-submit:hover:not(:disabled) {
   background: var(--accent-dark);
   transform: scale(1.01);
-  box-shadow: 0 4px 12px rgba(29,158,117,0.32);
+  box-shadow: 0 4px 12px rgba(5,122,255,0.32);
 }
 
 .btn-submit:active:not(:disabled) {
@@ -670,11 +661,11 @@ form {
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--accent-dark);
   color: #ffffff;
   font-size: 2rem;
   line-height: 1;
-  box-shadow: 0 4px 16px rgba(29,158,117,0.28);
+  box-shadow: 0 4px 16px rgba(5,122,255,0.28);
 }
 
 .success-title {
@@ -730,7 +721,7 @@ form {
 }
 
 .btn-another:hover {
-  background: #c0e9d8;
+  background: #c0d9ff;
 }
 
 /* -- Footer ---------------------------------------------------- */
@@ -771,8 +762,15 @@ form {
   .success-title     { font-size: 1.5rem; }
 }
 
+@media (max-width: 600px) {
+  .header-inner { text-align: center; }
+  .brand-logo   { max-width: 160px; margin: 0 auto; }
+}
+
 @media (max-width: 380px) {
   html { font-size: 16px; }
   .header-inner { padding: 12px 14px; }
-  .brand-tagline { display: none; }
+  .brand-logo   { max-width: 130px; }
 }
+
+
