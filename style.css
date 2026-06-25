@@ -71,18 +71,18 @@ body {
 
 /* -- Header ---------------------------------------------------- */
 .site-header {
-  background: var(--teal-dark);
+  background: #ffffff;
   border-bottom: 3px solid var(--gold);
   position: sticky;
   top: 0;
   z-index: 20;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
 }
 
 .header-inner {
   max-width: 700px;
   margin: 0 auto;
-  padding: 13px 20px;
+  padding: 12px 20px;
 }
 
 .brand-link {
