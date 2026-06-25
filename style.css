@@ -6,10 +6,10 @@
 
 /* -- Custom Properties ----------------------------------------- */
 :root {
-  --teal-dark:     #1f6b6b;
-  --teal-mid:      #2a8a8a;
-  --teal-light:    #e8f4f4;
-  --teal-xlight:   #f0fafa;
+  --teal-dark:     #0562CC;
+  --teal-mid:      #057AFF;
+  --teal-light:    #EBF3FF;
+  --teal-xlight:   #F0F6FF;
   --gold:          #d4a843;
   --gold-deep:     #b8902a;
   --gold-light:    #fdf6e3;
@@ -18,7 +18,7 @@
   --text:          #1a1a1a;
   --text-muted:    #5a5a5a;
   --border:        #ddd8d0;
-  --border-focus:  #2a8a8a;
+  --border-focus:  #057AFF;
   --error-bg:      #fef2f2;
   --error-text:    #b91c1c;
   --error-border:  #fca5a5;
@@ -124,7 +124,7 @@ body {
 }
 
 .form-header {
-  background: linear-gradient(135deg, var(--teal-dark) 0%, #287878 100%);
+  background: linear-gradient(135deg, var(--teal-dark) 0%, #057AFF 100%);
   padding: 28px 32px 24px;
   border-bottom: 3px solid var(--gold);
 }
@@ -139,7 +139,7 @@ body {
 
 .form-subtitle {
   font-size: 0.83rem;
-  color: #a8d8d8;
+  color: #A8CCFF;
   margin-top: 8px;
   line-height: 1.55;
   max-width: 480px;
@@ -737,11 +737,11 @@ form {
   margin: 0 auto;
   text-align: center;
   font-size: 0.74rem;
-  color: #8ecece;
+  color: #8AB8FF;
 }
 
 .footer-inner a {
-  color: #a8d8d8;
+  color: #A8CCFF;
   text-decoration: none;
 }
 
@@ -772,5 +772,6 @@ form {
   .header-inner { padding: 12px 14px; }
   .brand-logo   { max-width: 130px; }
 }
+
 
 
