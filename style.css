@@ -124,7 +124,7 @@ body {
 }
 
 .form-header {
-  background: linear-gradient(135deg, var(--teal-dark) 0%, #057AFF 100%);
+  background: linear-gradient(135deg, #057AFF 0%, #3395FF 100%);
   padding: 28px 32px 24px;
   border-bottom: 3px solid var(--gold);
 }
