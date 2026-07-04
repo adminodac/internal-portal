@@ -14,4 +14,4 @@
    ============================================================== */
 
 const SUPABASE_URL     = 'https://kadypvojaettjhvubnrs.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthZHlwdm9qYWV0dGpodnVibnJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMwOTk3MzgsImV4cCI6MjA5ODY3NTczOH0.am5MupyMnIUCBJtxBw1MJSr4yTjnX1LyIzxjzA1XolY';
+const SUPABASE_ANON_KEY = 'sb_publishable_YcKuHr-WaCR17ipeZsIQYA__C4bD14d';
