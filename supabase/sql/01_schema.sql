@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS public.submissions (
   content_type    text        NOT NULL,
   title           text        NOT NULL,
   description     text        NOT NULL,
+  publish_to      text[]      NOT NULL DEFAULT ARRAY['website','facebook','instagram'],
   status          text        NOT NULL DEFAULT 'received',
   reviewer_notes  text,
   created_at      timestamptz NOT NULL DEFAULT now(),
@@ -59,6 +60,9 @@ COMMENT ON COLUMN public.submissions.title IS
 
 COMMENT ON COLUMN public.submissions.description IS
   'Full description, as written by the group. May be used as a Facebook caption after light editing by ODAC staff.';
+
+COMMENT ON COLUMN public.submissions.publish_to IS
+  'Platforms the submitting group requested for publication. Array of: website, facebook, instagram. Defaults to all three.';
 
 COMMENT ON COLUMN public.submissions.status IS
   'Where this submission is in the workflow. Starts as "received". ODAC moves it through: fb_published â†’ web_published â†’ loop_closed.';

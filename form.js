@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
   if (!SUPABASE_URL || SUPABASE_URL.includes('YOUR-PROJECT')) {
-    showError('This form is not yet configured. Please contact ODAC.');
+    showError('This form is not yet configured. Please contact Osoyoos & District Arts Council.');
     return;
   }
 
@@ -229,6 +229,7 @@ async function handleSubmit(e) {
   const content_type    = fd.get('content_type')     || '';
   const title           = (fd.get('title')           || '').trim();
   const description     = (fd.get('description')     || '').trim();
+  const publish_to      = fd.getAll('publish_to');
 
   /* -- Validation -- */
   if (!group_name)
@@ -243,6 +244,9 @@ async function handleSubmit(e) {
   if (!content_type)
     return showError('Please choose what you are sharing (Event, Exhibition, Artwork, or Announcement).');
 
+  if (publish_to.length === 0)
+    return showError('Please select at least one platform to publish to.');
+
   if (!title)
     return showError('Please add a title for your submission.');
 
@@ -250,7 +254,7 @@ async function handleSubmit(e) {
     return showError('Your title is too short -- please make it a bit more descriptive.');
 
   if (!description)
-    return showError('Please add a description. This will help us write the Facebook post.');
+    return showError('Please add a description. This will help us write the post.');
 
   if (description.length < 20)
     return showError('Your description is a little short. Please add a bit more detail (at least 20 characters).');
@@ -295,6 +299,7 @@ async function handleSubmit(e) {
         group_name,
         submitter_email,
         content_type,
+        publish_to,
         title,
         description,
         status: 'received',
@@ -358,7 +363,7 @@ function setSubmitSent() {
   btn.disabled  = true;
   btnSpin.hidden = true;
   btnText.hidden = false;
-  btnText.textContent = 'Sent to ODAC ✓';
+  btnText.textContent = 'Sent ✓';
 }
 
 function showError(message) {
