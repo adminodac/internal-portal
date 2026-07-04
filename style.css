@@ -1,4 +1,4 @@
-﻿/* ================================================================
+/* ================================================================
    ODAC Internal Portal -- style.css
    Phase 1: Public Intake Form
    Design: Block Warmth Hybrid -- ODAC teal + warm gold
@@ -52,6 +52,10 @@
   margin: 0;
   padding: 0;
 }
+
+/* FIX 3: Global guard -- ensure the HTML `hidden` attribute always
+   hides elements even when a class sets display to flex/block/etc. */
+[hidden] { display: none !important; }
 
 html {
   font-size: 18px;
@@ -240,11 +244,9 @@ form {
   cursor: pointer;
 }
 
-/* Dropdown: group selected -- border turns accent + checkmark arrow */
-.field-select.select--filled {
-  border-color: var(--accent);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23057AFF' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
-}
+/* FIX 4 (Opción A): .field-select.select--filled REMOVED entirely.
+   The select now keeps the default grey chevron with no visual change
+   on selection -- clean, no blue checkmark. */
 
 /* -- Textarea -------------------------------------------------- */
 .field-textarea {
@@ -705,6 +707,8 @@ form {
   align-items: center;
   gap: 8px;
 }
+/* FIX 1+2 covered by the global [hidden] rule above -- no extra
+   rules needed here. Kept as comment for traceability. */
 
 /* -- Form header animated gradient ----------------------------- */
 @keyframes header-flow {
@@ -884,6 +888,3 @@ form {
   .header-inner { padding: 12px 14px; }
   .brand-logo   { max-width: 130px; }
 }
-
-
-
