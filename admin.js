@@ -2,7 +2,8 @@
    ODAC Internal Portal -- admin.js
    Phase 2: Admin Dashboard
    Handles: login (Supabase Auth), loading submissions, marking
-            channels as posted, marking submissions complete.
+            channels as posted, marking submissions complete,
+            editing expire_date, and editing reviewer_notes.
    ================================================================ */
 
 'use strict';
@@ -156,9 +157,10 @@ function renderSubmissions() {
 }
 
 function renderCard(sub) {
-  const deadline = deadlineInfo(sub.created_at);
+  const deadline  = deadlineInfo(sub.created_at);
   const isExpired = sub.expire_date && new Date(sub.expire_date) < startOfToday();
 
+  /* --- Channel buttons ---------------------------------------- */
   const channelButtons = (sub.publish_to || []).map(channel => {
     const posted = sub['posted_' + channel];
     const label  = CHANNEL_LABELS[channel] || channel;
@@ -171,8 +173,42 @@ function renderCard(sub) {
     ? '<button type="button" class="btn-complete" data-id="' + sub.id + '">Mark as complete</button>'
     : '';
 
+  /* --- Step 2: expire_date inline editor ---------------------- */
+  const expireValue = sub.expire_date || '';
+  const expireEditor =
+    '<div class="card-field-row">' +
+      '<label class="card-field-label" for="expire-' + sub.id + '">Remove from website after:</label>' +
+      '<div class="card-field-inline">' +
+        '<input type="date" id="expire-' + sub.id + '" class="card-date-input" ' +
+               'data-id="' + sub.id + '" data-field="expire_date" ' +
+               'value="' + esc(expireValue) + '">' +
+        '<button type="button" class="btn-save-field" ' +
+                'data-id="' + sub.id + '" data-field="expire_date" ' +
+                'data-source="expire-' + sub.id + '">Save</button>' +
+        (expireValue
+          ? '<button type="button" class="btn-clear-field" ' +
+                    'data-id="' + sub.id + '" data-field="expire_date">Clear</button>'
+          : '') +
+      '</div>' +
+    '</div>';
+
+  /* --- Step 3: reviewer_notes textarea (private) -------------- */
+  const notesValue = sub.reviewer_notes || '';
+  const notesEditor =
+    '<div class="card-field-row">' +
+      '<label class="card-field-label" for="notes-' + sub.id + '">'
+        + '🔒 Private staff notes <span class="card-field-private">(never shown to groups)</span></label>' +
+      '<textarea id="notes-' + sub.id + '" class="card-notes-textarea" ' +
+                'data-id="' + sub.id + '" rows="2">' + esc(notesValue) + '</textarea>' +
+      '<div class="card-notes-actions">' +
+        '<button type="button" class="btn-save-field" ' +
+                'data-id="' + sub.id + '" data-field="reviewer_notes" ' +
+                'data-source="notes-' + sub.id + '">Save notes</button>' +
+      '</div>' +
+    '</div>';
+
   return (
-    '<div class="submission-card' + (sub.status === 'closed' ? ' is-closed' : '') + '">' +
+    '<div class="submission-card' + (sub.status === 'closed' ? ' is-closed' : '') + '" data-card-id="' + sub.id + '">' +
       (isExpired
         ? '<div class="expire-banner">⚠ Remove from website — expired ' + formatDate(sub.expire_date) + '</div>'
         : '') +
@@ -189,6 +225,8 @@ function renderCard(sub) {
         '<div class="card-deadline ' + deadline.className + '">' + deadline.label + '</div>' +
       '</div>' +
       '<p class="card-description">' + esc(sub.description) + '</p>' +
+      expireEditor +
+      notesEditor +
       '<div class="card-actions">' + channelButtons + completeButton + '</div>' +
     '</div>'
   );
@@ -209,11 +247,22 @@ function deadlineInfo(createdAt) {
 }
 
 function attachCardHandlers() {
+  /* Channel + complete buttons */
   document.querySelectorAll('.btn-channel').forEach(btn => {
     btn.addEventListener('click', () => markChannelPosted(btn.dataset.id, btn.dataset.channel));
   });
   document.querySelectorAll('.btn-complete').forEach(btn => {
     btn.addEventListener('click', () => markComplete(btn.dataset.id));
+  });
+
+  /* Step 2 & 3: Save field buttons */
+  document.querySelectorAll('.btn-save-field').forEach(btn => {
+    btn.addEventListener('click', () => saveField(btn.dataset.id, btn.dataset.field, btn.dataset.source));
+  });
+
+  /* Step 2: Clear expire_date button */
+  document.querySelectorAll('.btn-clear-field').forEach(btn => {
+    btn.addEventListener('click', () => clearField(btn.dataset.id, btn.dataset.field));
   });
 }
 
@@ -251,6 +300,62 @@ async function markComplete(id) {
 
   sub.status = 'closed';
   renderSubmissions();
+}
+
+/* Step 2 & 3: save a single editable field -------------------- */
+async function saveField(id, field, sourceId) {
+  const sub = submissionsCache.find(s => s.id === id);
+  if (!sub) return;
+
+  const sourceEl = document.getElementById(sourceId);
+  if (!sourceEl) return;
+
+  const rawValue = sourceEl.value.trim();
+  /* expire_date: empty string should save as null */
+  const value = (field === 'expire_date' && rawValue === '') ? null : rawValue || null;
+
+  /* Visual feedback: disable the Save button briefly */
+  const saveBtn = document.querySelector(
+    '.btn-save-field[data-id="' + id + '"][data-field="' + field + '"]'
+  );
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving…'; }
+
+  const { error } = await db.from('submissions').update({ [field]: value }).eq('id', id);
+
+  if (error) {
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = field === 'expire_date' ? 'Save' : 'Save notes'; }
+    alert('Could not save. Please try again. (' + error.message + ')');
+    return;
+  }
+
+  sub[field] = value;
+
+  /* Re-render only the affected card to preserve other open editors */
+  const cardEl = document.querySelector('.submission-card[data-card-id="' + id + '"]');
+  if (cardEl) {
+    cardEl.outerHTML = renderCard(sub);
+    /* Re-attach all handlers since we replaced DOM */
+    attachCardHandlers();
+  }
+}
+
+/* Step 2: clear expire_date (set to null) --------------------- */
+async function clearField(id, field) {
+  const sub = submissionsCache.find(s => s.id === id);
+  if (!sub) return;
+
+  const { error } = await db.from('submissions').update({ [field]: null }).eq('id', id);
+  if (error) {
+    alert('Could not clear this field. Please try again.');
+    return;
+  }
+
+  sub[field] = null;
+  const cardEl = document.querySelector('.submission-card[data-card-id="' + id + '"]');
+  if (cardEl) {
+    cardEl.outerHTML = renderCard(sub);
+    attachCardHandlers();
+  }
 }
 
 /* == UTILITIES =================================================== */

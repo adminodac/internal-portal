@@ -191,6 +191,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+  margin-top: 16px;
 }
 
 .btn-channel,
@@ -231,4 +232,113 @@
   font-weight: 500;
   color: #1a7a3c;
   padding: 12px 6px;
+}
+
+/* ================================================================
+   Step 2 & 3: Inline field editors (expire_date + reviewer_notes)
+   ================================================================ */
+
+.card-field-row {
+  margin: 14px 0 6px;
+  padding: 12px 14px;
+  background: #f8f9fb;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.card-field-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.card-field-private {
+  font-weight: 400;
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+/* expire_date: input + save + clear on one line */
+.card-field-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.card-date-input {
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text);
+  min-width: 150px;
+}
+
+.card-date-input:focus {
+  outline: none;
+  border-color: var(--teal-mid);
+  box-shadow: 0 0 0 2px var(--teal-light);
+}
+
+/* reviewer_notes textarea */
+.card-notes-textarea {
+  font-family: inherit;
+  font-size: 0.9rem;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text);
+  resize: vertical;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+
+.card-notes-textarea:focus {
+  outline: none;
+  border-color: var(--teal-mid);
+  box-shadow: 0 0 0 2px var(--teal-light);
+}
+
+.card-notes-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+}
+
+/* Shared Save / Clear small buttons */
+.btn-save-field,
+.btn-clear-field {
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.btn-save-field {
+  background: var(--teal-mid);
+  color: #fff;
+}
+
+.btn-save-field:hover  { background: var(--teal-dark); }
+.btn-save-field:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-clear-field {
+  background: transparent;
+  color: var(--error-text);
+  border: 1px solid var(--error-border);
+}
+
+.btn-clear-field:hover {
+  background: var(--error-bg);
 }
