@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Osoyoos &amp; District Arts Council</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner admin-header-inner">
+      <div class="header-brand">
+        <a href="https://osoyoosartscouncil.com" target="_blank" rel="noopener" class="brand-link">
+          <img src="assets/logo.png"
+               alt="Osoyoos &amp; District Arts Council"
+               class="brand-logo">
+        </a>
+      </div>
+      <div class="admin-header-user" id="admin-header-user" hidden>
+        <span id="user-email" class="admin-user-email"></span>
+        <button type="button" id="logout-btn" class="btn-logout">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- LOGIN VIEW -->
+    <section id="login-view" class="admin-login-section">
+      <div class="admin-login-card">
+        <h1 class="admin-login-title">Admin Log In</h1>
+        <p class="admin-login-sub">For ODAC staff only. Contact the developer if you need an account.</p>
+
+        <form id="login-form" novalidate>
+          <div class="field-group">
+            <label class="field-label" for="login-email">Email</label>
+            <input type="email" id="login-email" name="email" class="field-input"
+                   autocomplete="username" required>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label" for="login-password">Password</label>
+            <input type="password" id="login-password" name="password" class="field-input"
+                   autocomplete="current-password" required>
+          </div>
+
+          <div id="login-error" class="form-error" hidden role="alert" aria-live="assertive"></div>
+
+          <button type="submit" id="login-btn" class="btn-submit admin-login-btn">
+            <span class="btn-text">Log In</span>
+            <span class="btn-loading" hidden aria-live="polite">
+              <span class="spinner" aria-hidden="true"></span>
+              Logging in...
+            </span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- DASHBOARD VIEW -->
+    <section id="dashboard-view" class="admin-dashboard-section" hidden>
+      <div class="admin-dashboard-container">
+
+        <h1 class="admin-dashboard-title">Submissions To Review</h1>
+
+        <div id="submission-list" class="submission-list">
+          <p class="loading-text">Loading submissions…</p>
+        </div>
+
+        <h2 class="admin-dashboard-subtitle">Completed</h2>
+        <div id="completed-list" class="submission-list submission-list--completed"></div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="config.js"></script>
+  <script src="admin.js"></script>
+
+</body>
+</html>

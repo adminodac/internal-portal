@@ -1,0 +1,234 @@
+/* ================================================================
+   ODAC Internal Portal -- admin.css
+   Phase 2: Admin Dashboard
+   Reuses tokens, fonts, and form controls from style.css.
+   ================================================================ */
+
+/* -- Header: user email + logout -------------------------------- */
+.admin-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-header-user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.admin-user-email {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.btn-logout {
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--teal-dark);
+  background: var(--teal-light);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.btn-logout:hover {
+  background: var(--teal-xlight);
+}
+
+/* -- Login view --------------------------------------------------*/
+.admin-login-section {
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px;
+}
+
+.admin-login-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: 40px 32px;
+}
+
+.admin-login-title {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+}
+
+.admin-login-sub {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 28px;
+}
+
+.admin-login-btn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* -- Dashboard view ------------------------------------------------*/
+.admin-dashboard-section {
+  padding: 40px 20px 80px;
+}
+
+.admin-dashboard-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.admin-dashboard-title {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 1.8rem;
+  margin-bottom: 24px;
+}
+
+.admin-dashboard-subtitle {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 1.3rem;
+  margin: 48px 0 16px;
+  color: var(--text-muted);
+}
+
+.loading-text,
+.empty-text,
+.error-text {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  padding: 16px 0;
+}
+
+.error-text {
+  color: var(--error-text);
+}
+
+/* -- Submission cards ----------------------------------------------*/
+.submission-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.submission-list--completed {
+  opacity: 0.85;
+}
+
+.submission-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+  padding: 20px 24px;
+}
+
+.submission-card.is-closed {
+  background: var(--teal-xlight);
+}
+
+.expire-banner {
+  background: var(--error-bg);
+  color: var(--error-text);
+  border: 1px solid var(--error-border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.card-group {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.card-title {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 1.2rem;
+  margin: 2px 0 4px;
+}
+
+.card-meta {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.card-deadline {
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.deadline--green  { background: #e7f6ec; color: #1a7a3c; }
+.deadline--yellow { background: #fdf3d9; color: #8a6512; }
+.deadline--red    { background: var(--error-bg); color: var(--error-text); }
+
+.card-description {
+  margin: 16px 0;
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.btn-channel,
+.btn-complete {
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  padding: 12px 18px;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+}
+
+.btn-channel {
+  background: var(--teal-mid);
+  color: #fff;
+  border: none;
+}
+
+.btn-channel:hover {
+  background: var(--teal-dark);
+}
+
+.btn-complete {
+  background: var(--gold);
+  color: #fff;
+  border: none;
+}
+
+.btn-complete:hover {
+  background: var(--gold-deep);
+}
+
+.channel-done {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1a7a3c;
+  padding: 12px 6px;
+}

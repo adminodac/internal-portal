@@ -350,6 +350,36 @@ If a member group gets a new contact person:
 
 ---
 
-*Last updated: Phase 1 Â· June 2026*
-*Next: Phase 2 (Julyâ€“September) adds the admin dashboard, status tracking, and 48h alerts.*
+## Phase 2 â€” Admin Dashboard Setup
+
+> **SQL Editor action**, then a **Browser action**
+
+**1. Run the two new migrations** (SQL Editor â†’ New query, one at a time):
+- `supabase/sql/03_admin_fields.sql` â€” adds the fields the dashboard needs
+  (`event_date`, `expire_date`, `posted_facebook`, `posted_website`, `posted_instagram`)
+  and simplifies `status` to just `received` / `closed`.
+- `supabase/sql/04_admin_rls.sql` â€” lets logged-in admins read and update
+  submissions. The public form's anon INSERT-only access is unchanged.
+
+**2. Create the admin accounts** â€” there is no sign-up form on purpose:
+1. Supabase dashboard â†’ **Authentication** â†’ **Users**
+2. Click **Add user** â†’ **Create new user**
+3. Enter Roberta's email and a temporary password â†’ **Create user**
+4. Repeat for Kelsey
+5. Share each password with them directly (they can change it later via
+   "Forgot password" if you enable email auth, or you can reset it manually
+   from this same screen)
+
+**3. Open the dashboard:**
+`https://adminodac.github.io/internal-portal/admin.html`
+
+Log in with one of the accounts above. You'll see every submission as a card,
+newest first, with a 48h deadline light (ðŸŸ¢/ðŸŸ¡/ðŸ”´), one button per channel the
+group asked for ("Mark as posted to Facebook", etc.), and a "Mark as complete"
+button. Completed submissions move down to the "Completed" section.
+
+---
+
+*Last updated: Phase 2 Â· July 2026*
+*Next: Phase 3 (October) adds monthly reports and handoff documentation.*
 

@@ -20,7 +20,7 @@ publication on Facebook and the ODAC website.
 | Phase | Target | Status |
 |-------|--------|--------|
 | **Phase 1** â€” Public intake form + email notifications | June 30, 2026 | âœ… Built |
-| **Phase 2** â€” Admin dashboard, status tracking, 48h alerts | September 2026 | Planned |
+| **Phase 2** â€” Admin dashboard, status tracking, 48h alerts | September 2026 | âœ… Built |
 | **Phase 3** â€” Monthly reports, handoff documentation | October 2026 | Planned |
 
 ---
@@ -53,6 +53,9 @@ browser-first setup guide. No CLI tools required for Phase 1.
 â”œâ”€â”€ index.html                          Public intake form
 â”œâ”€â”€ style.css                           Form styles (ODAC brand)
 â”œâ”€â”€ form.js                             Form logic and Supabase client
+â”œâ”€â”€ admin.html                          Admin dashboard (login + submissions)
+â”œâ”€â”€ admin.css                           Admin dashboard styles
+â”œâ”€â”€ admin.js                            Admin dashboard logic and Supabase client
 â”œâ”€â”€ config.js                           Supabase credentials (fill in after setup)
 â”œâ”€â”€ supabase/
 â”‚   â”œâ”€â”€ functions/
@@ -60,7 +63,9 @@ browser-first setup guide. No CLI tools required for Phase 1.
 â”‚   â”‚       â””â”€â”€ index.ts               Edge Function: sends emails on new submission
 â”‚   â””â”€â”€ sql/
 â”‚       â”œâ”€â”€ 01_schema.sql              Create tables (run first)
-â”‚       â””â”€â”€ 02_rls.sql                 Security policies (run second)
+â”‚       â”œâ”€â”€ 02_rls.sql                 Security policies (run second)
+â”‚       â”œâ”€â”€ 03_admin_fields.sql        Phase 2: admin dashboard fields (run third)
+â”‚       â””â”€â”€ 04_admin_rls.sql           Phase 2: admin RLS policies (run fourth)
 â””â”€â”€ docs/
     â””â”€â”€ SETUP.md                       Browser-first setup guide
 ```

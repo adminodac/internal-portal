@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupSelectFill();
   setupEmailValidation();
   setupAccentInputs();
+  setupEventDateToggle();
 
   // Supabase init -- show error and stop if not configured
   if (typeof supabase === 'undefined') {
@@ -64,7 +65,27 @@ function setupSelectFill() {
   });
 }
 
-/* 2. Email: valid / invalid state on blur (never on focus) */
+/* 2. Event Date: only required/visible when Content Type = Event */
+function setupEventDateToggle() {
+  const group = document.getElementById('event-date-group');
+  const input = document.getElementById('event_date');
+
+  document.querySelectorAll('input[name="content_type"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const isEvent = radio.value === 'event' && radio.checked;
+      if (isEvent) {
+        group.hidden = false;
+        input.required = true;
+      } else if (radio.checked) {
+        group.hidden = true;
+        input.required = false;
+        input.value = '';
+      }
+    });
+  });
+}
+
+/* 3. Email: valid / invalid state on blur (never on focus) */
 function setupEmailValidation() {
   const input = document.getElementById('submitter_email');
 
@@ -89,7 +110,7 @@ function setupEmailValidation() {
   });
 }
 
-/* 3. Title & Description: left accent line on focus;
+/* 4. Title & Description: left accent line on focus;
       persists as long as the field has content */
 function setupAccentInputs() {
   ['title', 'description'].forEach(id => {
@@ -230,6 +251,7 @@ async function handleSubmit(e) {
   const title           = (fd.get('title')           || '').trim();
   const description     = (fd.get('description')     || '').trim();
   const publish_to      = fd.getAll('publish_to');
+  const event_date      = fd.get('event_date') || '';
 
   /* -- Validation -- */
   if (!group_name)
@@ -243,6 +265,9 @@ async function handleSubmit(e) {
 
   if (!content_type)
     return showError('Please choose what you are sharing (Event, Exhibition, Artwork, or Announcement).');
+
+  if (content_type === 'event' && !event_date)
+    return showError('Please add the date your event takes place.');
 
   if (publish_to.length === 0)
     return showError('Please select at least one platform to publish to.');
@@ -299,6 +324,7 @@ async function handleSubmit(e) {
         group_name,
         submitter_email,
         content_type,
+        event_date: content_type === 'event' ? event_date : null,
         publish_to,
         title,
         description,
@@ -448,6 +474,10 @@ function resetForm() {
     document.getElementById('char-count').textContent = '0';
     const charWrap = document.querySelector('.char-count');
     charWrap.classList.remove('char-count--mid', 'char-count--warn', 'char-count--danger');
+
+    // Reset event date field (hidden + not required until Event is chosen again)
+    document.getElementById('event-date-group').hidden = true;
+    document.getElementById('event_date').required = false;
 
     // Reset interaction classes
     document.getElementById('group_name').classList.remove('select--filled');
