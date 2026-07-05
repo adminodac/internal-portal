@@ -102,9 +102,15 @@
     .insight-list{list-style:none;display:flex;flex-direction:column;gap:var(--space-2)}
     .insight-list li{font-size:var(--text-xs);color:var(--color-text-muted);padding-left:var(--space-4);position:relative}
     .insight-list li::before{content:'→';position:absolute;left:0;color:var(--color-primary);font-weight:700}
+    .schema-box{background:var(--color-surface-offset);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);margin-top:var(--space-4)}
+    .schema-title{font-size:var(--text-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:var(--space-3)}
+    .schema-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--space-2)}
+    .schema-field{font-size:var(--text-xs);color:var(--color-text-muted);font-family:monospace;background:var(--color-surface);padding:var(--space-1) var(--space-2);border-radius:var(--radius-sm);border:1px solid var(--color-border)}
+    .schema-field.exists{color:var(--color-success)}
+    .schema-field.pending{color:var(--color-gold)}
     .snapshot{background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-6);margin-top:var(--space-8);margin-bottom:var(--space-10)}
     .snapshot-title{font-size:var(--text-sm);font-weight:600;color:var(--color-text-muted);letter-spacing:.05em;text-transform:uppercase;margin-bottom:var(--space-4)}
-    .snapshot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--space-3)}
+    .snapshot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:var(--space-3)}
     .snapshot-item{display:flex;flex-direction:column;gap:2px}
     .snapshot-key{font-size:var(--text-xs);color:var(--color-text-muted)}
     .snapshot-val{font-size:var(--text-sm);font-weight:600;color:var(--color-text)}
@@ -117,13 +123,18 @@
     .protocol-role{font-size:var(--text-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--color-primary);margin-bottom:var(--space-2)}
     .protocol-tool{font-size:var(--text-sm);font-weight:600;color:var(--color-text);margin-bottom:var(--space-2)}
     .protocol-desc{font-size:var(--text-xs);color:var(--color-text-muted);line-height:1.5}
+    .warning-box{background:color-mix(in oklch,var(--color-warning) 6%,var(--color-surface-2));border:1px solid color-mix(in oklch,var(--color-warning) 25%,transparent);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-5);margin-top:var(--space-4)}
+    .warning-title{font-size:var(--text-xs);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--color-warning);margin-bottom:var(--space-3)}
+    .warning-list{list-style:none;display:flex;flex-direction:column;gap:var(--space-2)}
+    .warning-list li{font-size:var(--text-xs);color:var(--color-text-muted);padding-left:var(--space-4);position:relative}
+    .warning-list li::before{content:'⚠';position:absolute;left:0;color:var(--color-warning)}
     footer{border-top:1px solid var(--color-divider);padding:var(--space-8) 0 var(--space-12);margin-top:var(--space-8)}
     .footer-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-4)}
     .footer-note{font-size:var(--text-xs);color:var(--color-text-muted);max-width:55ch}
     .footer-links{display:flex;gap:var(--space-4)}
     .footer-links a{font-size:var(--text-xs);color:var(--color-text-muted)}
     .footer-links a:hover{color:var(--color-primary)}
-    @media(max-width:600px){.hero-stats{gap:var(--space-6)}.phase-header{flex-direction:column}.footer-inner{flex-direction:column}.protocol-box{grid-template-columns:1fr}}
+    @media(max-width:600px){.hero-stats{gap:var(--space-6)}.phase-header{flex-direction:column}.footer-inner{flex-direction:column}.protocol-box{grid-template-columns:1fr}.schema-grid{grid-template-columns:1fr 1fr}}
   </style>
 </head>
 <body>
@@ -159,9 +170,9 @@
     </p>
     <div class="hero-stats">
       <div class="stat"><span class="stat-value">1</span><span class="stat-label">Fase completa ✓</span></div>
-      <div class="stat"><span class="stat-value">2+</span><span class="stat-label">Submissions reales</span></div>
+      <div class="stat"><span class="stat-value">2</span><span class="stat-label">Submissions reales</span></div>
       <div class="stat"><span class="stat-value">7</span><span class="stat-label">Migraciones aplicadas</span></div>
-      <div class="stat"><span class="stat-value">3</span><span class="stat-label">Fases por venir</span></div>
+      <div class="stat"><span class="stat-value">14 jul</span><span class="stat-label">Reunión con Roberta</span></div>
     </div>
   </div>
 </div>
@@ -174,35 +185,48 @@
     <div class="snapshot-grid">
       <div class="snapshot-item"><span class="snapshot-key">Supabase</span><span class="snapshot-val dot-green">ACTIVE_HEALTHY</span></div>
       <div class="snapshot-item"><span class="snapshot-key">GitHub Pages</span><span class="snapshot-val dot-green">Publicado</span></div>
-      <div class="snapshot-item"><span class="snapshot-key">Formulario público</span><span class="snapshot-val dot-green">Funcional</span></div>
-      <div class="snapshot-item"><span class="snapshot-key">Email confirmación</span><span class="snapshot-val dot-green">Verificado ✓</span></div>
-      <div class="snapshot-item"><span class="snapshot-key">Remitente email</span><span class="snapshot-val dot-yellow">soymanada.com → migrar</span></div>
-      <div class="snapshot-item"><span class="snapshot-key">H1 nombre completo</span><span class="snapshot-val dot-green">Aplicado</span></div>
-      <div class="snapshot-item"><span class="snapshot-key">Dashboard admin</span><span class="snapshot-val dot-yellow">En GitHub, SQLs pendientes</span></div>
-      <div class="snapshot-item"><span class="snapshot-key">Panel entrevistas 14 jul</span><span class="snapshot-val dot-green">Confirmado ✓</span></div>
+      <div class="snapshot-item"><span class="snapshot-key">Formulario público</span><span class="snapshot-val dot-green">Funcional (end-to-end ✓)</span></div>
+      <div class="snapshot-item"><span class="snapshot-key">Email confirmación</span><span class="snapshot-val dot-green">Verificado 4 jul ✓</span></div>
+      <div class="snapshot-item"><span class="snapshot-key">Remitente email</span><span class="snapshot-val dot-yellow">soymanada.com → migrar antes sep</span></div>
+      <div class="snapshot-item"><span class="snapshot-key">Fixes del manual (H1, canales)</span><span class="snapshot-val dot-green">Aplicados ✓</span></div>
+      <div class="snapshot-item"><span class="snapshot-key">Schema: campos posted_*</span><span class="snapshot-val dot-green">En DB ✓ (posted_facebook, _website, _instagram)</span></div>
+      <div class="snapshot-item"><span class="snapshot-key">Dashboard admin.html</span><span class="snapshot-val dot-yellow">En GitHub — SQLs pendientes de aplicar</span></div>
+      <div class="snapshot-item"><span class="snapshot-key">reviewer_notes en schema</span><span class="snapshot-val dot-green">Existe en DB (uso solo interno)</span></div>
+      <div class="snapshot-item"><span class="snapshot-key">Panel entrevistas 14 jul</span><span class="snapshot-val dot-green">Confirmado (3:00pm panel, 3:30pm boardroom)</span></div>
     </div>
   </div>
 
-  <!-- PROTOCOLO DE COORDINACION -->
+  <!-- PROTOCOLO -->
   <div class="phases-header">
     <h2 class="section-title">Protocolo de coordinación</h2>
-    <p class="section-subtitle">Tres herramientas, un documento compartido. Nadie tiene memoria entre sesiones — este roadmap es la conversación.</p>
+    <p class="section-subtitle">Tres herramientas, un documento compartido. Nadie tiene memoria entre sesiones — este roadmap es la conversación. Francisco es el mensajero entre los tres sistemas.</p>
   </div>
+
+  <div class="warning-box">
+    <p class="warning-title">&#x1F6A8; Punto ciego confirmado — No hay comunicación directa entre herramientas</p>
+    <ul class="warning-list">
+      <li>Claude PO, Claude Code y Perplexity son sistemas separados sin memoria compartida en tiempo real.</li>
+      <li>La "coordinación" no es una conversación — es este documento. Todos leen la misma fuente de verdad.</li>
+      <li>Todo lo que Perplexity proponga debe pasar por Claude PO antes de aplicarse (no tiene acceso al manual ni a las transcripciones de Roberta). Ya ocurrió un caso: <code>applicant_name</code>, <code>amount_requested</code> y <code>reviewer_notes</code> propuestos sin autorización — interceptados correctamente.</li>
+      <li>Nota: <code>reviewer_notes</code> terminó siendo incluido en schema por decisión de negocio (notas internas, nunca visibles al grupo). Pero el proceso de validación previa funcionó.</li>
+    </ul>
+  </div>
+
   <div class="protocol-box">
     <div class="protocol-card">
       <div class="protocol-role">Product Owner / Auditor</div>
       <div class="protocol-tool">Claude.ai</div>
-      <div class="protocol-desc">Valida contra contexto de negocio (manual, transcripciones de Roberta). Diseña arquitectura (Opus para decisiones nuevas). Revisa lo que propone Code o Perplexity antes de aplicar.</div>
+      <div class="protocol-desc">Valida contra contexto de negocio (manual, transcripciones de Roberta). Diseña arquitectura — <code>/model opus</code> para decisiones nuevas. Revisa todo lo que propone Code o Perplexity antes de aplicar. No escribe código de producción.</div>
     </div>
     <div class="protocol-card">
       <div class="protocol-role">Desarrollador principal</div>
       <div class="protocol-tool">Claude Code</div>
-      <div class="protocol-desc">Ejecuta en el repo. /model sonnet para cambios definidos. /model opus solo para arquitectura nueva. Subagente Haiku para exploración (automático). Commits al repo con mensajes descriptivos.</div>
+      <div class="protocol-desc">Ejecuta en el repo. <code>/model sonnet</code> por defecto para cambios definidos. <code>/model opus</code> solo para arquitectura nueva. Subagente Haiku para exploración (automático — no gasta tokens de la conversación principal). Commits descriptivos.</div>
     </div>
     <div class="protocol-card">
       <div class="protocol-role">Backup dev / Verificación</div>
       <div class="protocol-tool">Perplexity</div>
-      <div class="protocol-desc">Red de contingencia cuando se agotan tokens. Toda propuesta de Perplexity pasa por Claude PO antes de aplicarse — no tiene acceso al manual ni a las transcripciones de Roberta.</div>
+      <div class="protocol-desc">Red de contingencia cuando se agotan tokens de Claude. Acceso a Supabase MCP y GitHub MCP para lectura y escritura verificada. Toda propuesta de diseño pasa por Claude PO antes de aplicarse. Ejecuta cambios bien definidos sin riesgo.</div>
     </div>
   </div>
 
@@ -210,7 +234,7 @@
   <div class="phases">
     <div class="phases-header">
       <h2 class="section-title">Fases del proyecto</h2>
-      <p class="section-subtitle">Criterio de done verificable antes de avanzar. No se declara completa una fase sin evidencia real.</p>
+      <p class="section-subtitle">Criterio de done verificable antes de avanzar. No se declara completa una fase sin evidencia real en producción.</p>
     </div>
 
     <!-- PHASE 1 -->
@@ -220,7 +244,7 @@
           <div class="phase-number">1</div>
           <div>
             <div class="phase-name">Formulario de submission</div>
-            <div class="phase-period">Junio – Julio 2026</div>
+            <div class="phase-period">Junio – Julio 2026 · Cerrada 4 jul 2026</div>
           </div>
         </div>
         <span class="badge badge-done">✓ Completa</span>
@@ -230,37 +254,37 @@
           <svg class="step-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M6 10l3 3 5-5" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round"/></svg>
           <div class="step-content">
             <div class="step-title">Schema Supabase</div>
-            <div class="step-desc">Tablas <code>submissions</code> y <code>submission_files</code>, RLS activo, pipeline de estados, 7 migraciones aplicadas manualmente por Francisco.</div>
+            <div class="step-desc">Tablas <code>submissions</code> y <code>submission_files</code>, RLS activo, 7 migraciones aplicadas. Campos clave confirmados en DB: <code>group_name</code>, <code>submitter_email</code>, <code>content_type</code>, <code>title</code>, <code>description</code>, <code>publish_to</code>, <code>status</code> (DEFAULT: <code>received</code>), <code>event_date</code>, <code>expire_date</code>, <code>posted_facebook</code>, <code>posted_website</code>, <code>posted_instagram</code>, <code>reviewer_notes</code>.</div>
           </div>
-          <span class="step-tag tag-done">Hecho</span>
+          <span class="step-tag tag-done">Verificado</span>
         </li>
         <li class="step done">
           <svg class="step-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M6 10l3 3 5-5" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round"/></svg>
           <div class="step-content">
             <div class="step-title">Frontend en GitHub Pages</div>
-            <div class="step-desc">Formulario funcional con los 3 canales (Website, Facebook, Instagram). Checkbox de Instagram ✓. Nombre completo en textos externos ✓.</div>
+            <div class="step-desc">Formulario funcional con 3 canales (Website, Facebook, Instagram). Checkbox Instagram ✓. Nombre completo en H1, botón, confirmación y footer ✓. Canales sin acrónimo ODAC ✓.</div>
           </div>
-          <span class="step-tag tag-done">Hecho</span>
+          <span class="step-tag tag-done">Verificado</span>
         </li>
         <li class="step done">
           <svg class="step-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M6 10l3 3 5-5" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round"/></svg>
           <div class="step-content">
-            <div class="step-title">Email de confirmación automático</div>
-            <div class="step-desc">Verificado 4 jul 2026: submission "Prueba 1" (grupo: Similkameen Country Development Association) generó email de confirmación real entregado. Sistema end-to-end funciona.</div>
+            <div class="step-title">Email de confirmación automático — end-to-end verificado</div>
+            <div class="step-desc">4 jul 2026, 20:14: submission "Prueba 1" (grupo: Similkameen Country Development Association) generó email de confirmación real, asunto "We received your submission – Prueba 1", entregado correctamente. La Edge Function y pipeline completo funcionan.</div>
           </div>
-          <span class="step-tag tag-done">Verificado</span>
+          <span class="step-tag tag-done">Evidencia real</span>
         </li>
         <li class="step caution">
           <svg class="step-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M10 7v4M10 13v1" stroke="var(--color-gold)" stroke-width="2" stroke-linecap="round"/></svg>
           <div class="step-content">
-            <div class="step-title">Migrar remitente de email</div>
-            <div class="step-desc">Actualmente sale desde <code>noreply@soymanada.com</code> (dominio personal de Francisco). Antes de septiembre migrar a <code>osoyoosartscouncil@gmail.com</code> en Resend. Cambio de config, no de código.</div>
+            <div class="step-title">Migrar remitente de email — deuda técnica</div>
+            <div class="step-desc">Actualmente sale desde <code>noreply@soymanada.com</code> (dominio personal de Francisco, proyecto de apoyo a inmigrantes). Confuso para grupos de ODAC. Antes de septiembre: configurar en Resend para salir desde <code>osoyoosartscouncil@gmail.com</code> (correo oficial confirmado por Roberta). Es cambio de config, no de código.</div>
           </div>
-          <span class="step-tag tag-caution">Deuda técnica</span>
+          <span class="step-tag tag-caution">Deuda técnica — antes sep</span>
         </li>
       </ul>
       <hr class="phase-divider">
-      <p style="font-size:var(--text-xs);color:var(--color-text-muted);">&#x2705; <strong>Criterio de done cumplido:</strong> submission real recibida ("Prueba 1") → email de confirmación entregado → fila en DB con status <code>received</code>. Fase 1 cerrada el 4 julio 2026.</p>
+      <p style="font-size:var(--text-xs);color:var(--color-text-muted);">&#x2705; <strong>Criterio de done cumplido:</strong> submission real recibida → email de confirmación entregado → fila en DB con <code>status = received</code>. Fase 1 cerrada 4 julio 2026.</p>
     </div>
 
     <!-- PHASE 2 -->
@@ -277,68 +301,86 @@
       </div>
 
       <div class="insight-box" style="margin-bottom:var(--space-5)">
-        <p class="insight-title">&#x1F3AF; Principio de diseño: Asistir, no automatizar</p>
+        <p class="insight-title">&#x1F3AF; Principio rector: Asistir, no automatizar</p>
         <ul class="insight-list">
-          <li>El sistema <strong>prepara</strong> el post (texto optimizado por canal + imagen adjunta). Roberta lo <strong>aprueba y publica</strong> ella.</li>
-          <li>Botón "Copiar para Facebook" / "Copiar para Instagram" — pega y publica manualmente. Cero dependencia de APIs de Meta.</li>
-          <li>Admin marca "Publicado" → sistema registra fecha → KPI de 48h se mide solo.</li>
-          <li>Diseño móvil primero — Roberta y Kelsey pueden operar desde el celular.</li>
+          <li>El sistema <strong>prepara</strong> el post (texto optimizado por canal + imagen adjunta). Roberta lo <strong>aprueba y publica</strong> ella. Cero APIs de Meta — cero dependencias que se rompan.</li>
+          <li>Botón "Copiar para Facebook" / "Copiar para Instagram" → pega y publica manualmente. Admin puede editar el texto generado antes de copiar.</li>
+          <li>Admin marca "Publicado" usando los campos <code>posted_facebook</code>, <code>posted_instagram</code>, <code>posted_website</code> que ya existen en DB → sistema registra automáticamente con <code>published_at</code>.</li>
+          <li>KPI de 48h calculable desde <code>created_at</code> vs <code>published_at</code>. Dato para el board.</li>
+          <li>Diseño móvil primero — Roberta y Kelsey operan desde el celular.</li>
+          <li><strong>Criterio de sostenibilidad:</strong> cada pieza debe ser operable cuando Francisco no esté. Si solo él sabe mantenerla, no cuenta como done.</li>
         </ul>
       </div>
 
-      <ul class="steps">
+      <div class="schema-box">
+        <p class="schema-title">Campos en DB — estado verificado 5 jul 2026</p>
+        <div class="schema-grid">
+          <span class="schema-field exists">posted_facebook ✓</span>
+          <span class="schema-field exists">posted_instagram ✓</span>
+          <span class="schema-field exists">posted_website ✓</span>
+          <span class="schema-field exists">expire_date ✓</span>
+          <span class="schema-field exists">reviewer_notes ✓</span>
+          <span class="schema-field exists">status (received/closed) ✓</span>
+          <span class="schema-field pending">published_at — pendiente</span>
+          <span class="schema-field pending">facebook_text — pendiente*</span>
+          <span class="schema-field pending">instagram_text — pendiente*</span>
+        </div>
+        <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-3);">* <code>facebook_text</code> e <code>instagram_text</code>: texto generado/editado por admin para cada canal. <code>published_at</code>: timestamp de cierre. Estas 3 columnas se agregan como migración al aplicar los SQLs pendientes del admin. Validar con Claude PO antes de ejecutar.</p>
+      </div>
+
+      <ul class="steps" style="margin-top:var(--space-5)">
         <li class="step done">
           <svg class="step-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M6 10l3 3 5-5" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round"/></svg>
           <div class="step-content">
             <div class="step-title">Estructura admin.html / admin.js / admin.css</div>
-            <div class="step-desc">Creada por Claude Code el 5 jul 2026. Incluye Auth con Supabase, vista de submissions, semáforo de 48h, alertas de posters expirados. En GitHub, pendiente de aplicar SQLs.</div>
+            <div class="step-desc">Creada por Claude Code el 5 jul 2026. Incluye Auth con Supabase, vista de submissions, semáforo de 48h, alertas de posters expirados. Archivos en GitHub, pendiente de aplicar migraciones SQL.</div>
           </div>
           <span class="step-tag tag-done">En GitHub</span>
         </li>
         <li class="step active">
           <svg class="step-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="10" r="3" fill="var(--color-primary)"/></svg>
           <div class="step-content">
-            <div class="step-title">Aplicar migraciones del admin en Supabase</div>
-            <div class="step-desc">SQLs <code>03_admin_fields.sql</code> y <code>04_admin_rls.sql</code> están en el repo pero no aplicados en la DB. Francisco los aplica manualmente. Agregan campos: <code>facebook_text</code>, <code>instagram_text</code>, <code>published_at</code>, semáforo de estado.</div>
+            <div class="step-title">Aplicar migraciones del admin en Supabase ← SIGUIENTE PASO</div>
+            <div class="step-desc">SQLs <code>03_admin_fields.sql</code> y <code>04_admin_rls.sql</code> están en el repo pero no aplicados en DB. Agregan <code>facebook_text</code>, <code>instagram_text</code>, <code>published_at</code> y políticas RLS para rol admin. Antes de aplicar: pasar por Claude PO para validar contra el schema actual ya verificado (evitar duplicar columnas que ya existen como <code>posted_facebook</code>).</div>
           </div>
           <span class="step-tag tag-active">Siguiente</span>
         </li>
         <li class="step">
           <svg class="step-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--color-text-faint)" stroke-width="1.5"/></svg>
           <div class="step-content">
-            <div class="step-title">Auth magic link para Roberta y Kelsey</div>
-            <div class="step-desc">Supabase Auth con OTP por email. Sin contraseña. Solo <code>osoyoosartscouncil@gmail.com</code> accede. Validar en reunión del 14 jul con Roberta.</div>
+            <div class="step-title">Auth magic link — Roberta y Kelsey</div>
+            <div class="step-desc">Supabase Auth con OTP por email. Sin contraseña. Solo <code>osoyoosartscouncil@gmail.com</code> accede. Validar flujo en reunión del 14 jul con Roberta antes de finalizar.</div>
           </div>
           <span class="step-tag tag-next">Próximo</span>
         </li>
         <li class="step">
           <svg class="step-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--color-text-faint)" stroke-width="1.5"/></svg>
           <div class="step-content">
-            <div class="step-title">Generador de preview de post</div>
-            <div class="step-desc">El sistema genera texto para Facebook e Instagram desde los campos de la submission. Admin puede editar antes de copiar. Imagen adjunta mostrada por canal.</div>
+            <div class="step-title">Generador de preview de post (Asistir, no automatizar)</div>
+            <div class="step-desc">Vista por submission con texto pre-generado para Facebook e Instagram desde los campos del formulario (título + descripción + fecha de evento si aplica). Admin edita el texto en un <code>textarea</code>, luego hace clic en "Copiar para Facebook" / "Copiar para Instagram". Sin APIs externas. Imagen adjunta mostrada al lado. Diseñado por Claude PO el 5 jul 2026 — prompt para Code listo.</div>
           </div>
           <span class="step-tag tag-next">Próximo</span>
         </li>
         <li class="step">
           <svg class="step-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--color-text-faint)" stroke-width="1.5"/></svg>
           <div class="step-content">
-            <div class="step-title">Email de cierre de loop al grupo</div>
-            <div class="step-desc">Cuando Roberta marca <code>loop_closed</code>, el sistema envía email al grupo confirmando publicación y canales usados.</div>
+            <div class="step-title">Marcado de publicación y cierre de loop</div>
+            <div class="step-desc">Checkboxes por canal (<code>posted_facebook</code>, <code>posted_instagram</code>, <code>posted_website</code>) ya existen en DB. Admin los marca → sistema registra <code>published_at</code> → cuando todos los canales solicitados están marcados, opción de enviar email de cierre al grupo.</div>
           </div>
           <span class="step-tag tag-next">Próximo</span>
         </li>
         <li class="step">
           <svg class="step-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--color-text-faint)" stroke-width="1.5"/></svg>
           <div class="step-content">
-            <div class="step-title">KPI: tasa de respuesta en 48h</div>
-            <div class="step-desc">Contador en el dashboard: porcentaje de submissions respondidas en &lt;48h. Dato para el board. Calculado desde <code>submitted_at</code> vs <code>published_at</code>.</div>
+            <div class="step-title">KPI de 48h en dashboard</div>
+            <div class="step-desc">Contador visible: porcentaje de submissions respondidas en &lt;48h. Calculado desde <code>created_at</code> vs <code>published_at</code>. Dato para reportar al board. No requiere columna nueva — usa campos existentes.</div>
           </div>
           <span class="step-tag tag-next">Próximo</span>
         </li>
       </ul>
       <hr class="phase-divider">
-      <p style="font-size:var(--text-xs);color:var(--color-text-muted);">&#x1F3AF; <strong>Criterio de done:</strong> Roberta puede logearse, ver submissions, copiar texto por canal, marcar como publicado, y el grupo recibe email de confirmación de cierre.</p>
-      <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-2);">&#x1F4C5; <strong>Hito clave:</strong> Reunión panel 14 jul 2026 (3:00pm panel, 3:30pm boardroom) — validar flujo con Roberta antes de finalizar el dashboard.</p>
+      <p style="font-size:var(--text-xs);color:var(--color-text-muted);">&#x1F3AF; <strong>Criterio de done:</strong> Roberta puede logearse, ver submissions, editar y copiar texto por canal, marcar como publicado, y el grupo recibe email de confirmación de cierre.</p>
+      <p style="font-size:var(--text-xs);color:var(--color-text-muted);margin-top:var(--space-2);">&#x1F4C5; <strong>Hito clave:</strong> Reunión panel 14 jul 2026 — 3:00pm panel, 3:30pm boardroom. Validar flujo del dashboard con Roberta antes de finalizar. Francisco está en el panel que selecciona al futuro administrador del sistema.</p>
     </div>
 
     <!-- PHASE 3 -->
@@ -354,9 +396,9 @@
         <span class="badge badge-future">Futuro</span>
       </div>
       <ul class="steps">
-        <li class="step"><svg class="step-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--color-text-faint)" stroke-width="1.5"/></svg><div class="step-content"><div class="step-title">Tabla <code>artists</code> en Supabase</div><div class="step-desc">Perfil público: nombre, disciplina, bio, website, imagen. Vinculado a submissions históricas.</div></div><span class="step-tag tag-pending">Planificado</span></li>
+        <li class="step"><svg class="step-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--color-text-faint)" stroke-width="1.5"/></svg><div class="step-content"><div class="step-title">Tabla <code>artists</code> en Supabase</div><div class="step-desc">Perfil público: nombre, disciplina, bio, website, imagen. Vinculado a submissions históricas del grupo.</div></div><span class="step-tag tag-pending">Planificado</span></li>
         <li class="step"><svg class="step-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--color-text-faint)" stroke-width="1.5"/></svg><div class="step-content"><div class="step-title">Página pública de directorio</div><div class="step-desc">Búsqueda por disciplina y nombre. URL limpia bajo dominio de ODAC.</div></div><span class="step-tag tag-pending">Planificado</span></li>
-        <li class="step"><svg class="step-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--color-text-faint)" stroke-width="1.5"/></svg><div class="step-content"><div class="step-title">Auto-claim de perfil por artista</div><div class="step-desc">Artistas que hicieron submission pueden reclamar y editar su perfil vía magic link.</div></div><span class="step-tag tag-pending">Planificado</span></li>
+        <li class="step"><svg class="step-icon" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="var(--color-text-faint)" stroke-width="1.5"/></svg><div class="step-content"><div class="step-title">Auto-claim de perfil por artista</div><div class="step-desc">Artistas que hicieron submission pueden reclamar y editar su perfil vía magic link. Mismo patrón de Auth que el dashboard admin.</div></div><span class="step-tag tag-pending">Planificado</span></li>
       </ul>
     </div>
 
@@ -386,11 +428,12 @@
 <footer>
   <div class="container">
     <div class="footer-inner">
-      <p class="footer-note">Fuente de verdad del proyecto. Claude PO (claude.ai), Claude Code y Perplexity leen este archivo — no se comunican entre sí directamente. Francisco es el mensajero entre los tres sistemas.</p>
+      <p class="footer-note">Fuente de verdad del proyecto. Claude PO (claude.ai), Claude Code y Perplexity leen este archivo — no se comunican directamente. Francisco es el mensajero entre los tres sistemas. Última sincronización: sesión Claude PO del 5 jul 2026.</p>
       <div class="footer-links">
         <a href="../index.html" target="_blank" rel="noopener">Portal →</a>
         <a href="https://github.com/adminodac/internal-portal" target="_blank" rel="noopener">GitHub →</a>
         <a href="https://supabase.com/dashboard/project/kadypvojaettjhvubnrs" target="_blank" rel="noopener">Supabase →</a>
+        <a href="https://adminodac.github.io/internal-portal/form/" target="_blank" rel="noopener">Formulario →</a>
       </div>
     </div>
   </div>
