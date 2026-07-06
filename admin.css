@@ -234,10 +234,7 @@
   padding: 12px 6px;
 }
 
-/* ================================================================
-   Step 2 & 3: Inline field editors (expire_date + reviewer_notes)
-   ================================================================ */
-
+/* -- expire_date inline editor ----------------------------------- */
 .card-field-row {
   margin: 14px 0 6px;
   padding: 12px 14px;
@@ -254,13 +251,6 @@
   margin-bottom: 8px;
 }
 
-.card-field-private {
-  font-weight: 400;
-  font-style: italic;
-  font-size: 0.8rem;
-}
-
-/* expire_date: input + save + clear on one line */
 .card-field-inline {
   display: flex;
   align-items: center;
@@ -285,34 +275,6 @@
   box-shadow: 0 0 0 2px var(--teal-light);
 }
 
-/* reviewer_notes textarea */
-.card-notes-textarea {
-  font-family: inherit;
-  font-size: 0.9rem;
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: #fff;
-  color: var(--text);
-  resize: vertical;
-  box-sizing: border-box;
-  line-height: 1.5;
-}
-
-.card-notes-textarea:focus {
-  outline: none;
-  border-color: var(--teal-mid);
-  box-shadow: 0 0 0 2px var(--teal-light);
-}
-
-.card-notes-actions {
-  margin-top: 8px;
-  display: flex;
-  gap: 8px;
-}
-
-/* Shared Save / Clear small buttons */
 .btn-save-field,
 .btn-clear-field {
   font-family: inherit;
@@ -330,7 +292,7 @@
   color: #fff;
 }
 
-.btn-save-field:hover  { background: var(--teal-dark); }
+.btn-save-field:hover    { background: var(--teal-dark); }
 .btn-save-field:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .btn-clear-field {
@@ -341,4 +303,141 @@
 
 .btn-clear-field:hover {
   background: var(--error-bg);
+}
+
+/* -- Attached files ---------------------------------------------- */
+.card-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 16px;
+}
+
+.btn-file {
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--teal-dark);
+  background: var(--teal-xlight);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.btn-file:hover {
+  background: var(--teal-light);
+}
+
+/* -- Social posts ("assist, don't automate") --------------------- */
+.social-section {
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.social-note {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.btn-social-toggle {
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--teal-dark);
+  background: var(--surface);
+  border: 2px solid var(--teal-mid);
+  border-radius: var(--radius-sm);
+  padding: 12px 18px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.btn-social-toggle:hover {
+  background: var(--teal-xlight);
+}
+
+.social-panel {
+  margin-top: 16px;
+}
+
+.social-help {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+}
+
+.social-editor {
+  margin-bottom: 20px;
+}
+
+.social-editor-label {
+  display: block;
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.social-textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.social-textarea:focus {
+  outline: 2px solid var(--teal-mid);
+  outline-offset: 1px;
+}
+
+.social-editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-social-copy,
+.btn-social-save {
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 12px 18px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.btn-social-copy {
+  background: var(--teal-mid);
+  color: #fff;
+}
+
+.btn-social-copy:hover {
+  background: var(--teal-dark);
+}
+
+.btn-social-save {
+  background: var(--teal-xlight);
+  color: var(--teal-dark);
+  border: 1px solid var(--border);
+}
+
+.btn-social-save:hover {
+  background: var(--teal-light);
+}
+
+.btn-social-save:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
