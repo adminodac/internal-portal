@@ -123,24 +123,24 @@ El código del dashboard ya está escrito contra estos nombres, con guardas (`'c
 
 ## 3. ESTADO POR FASES
 - [x] **Fase 1 — Intake:** formulario público en vivo, escribe en Supabase, emails de confirmación y alerta funcionando. Verificado end-to-end 4-jul (submission "Prueba 1" + email recibido). Fixes del manual aplicados (Instagram, nombre completo).
-- [ ] **Fase 2 — Dashboard admin (EN CURSO):** login Supabase Auth ✓, semáforo 48h ✓, botones por canal ✓, alerta de contenido vencido ✓, sección social "asistir, no automatizar" ✓ (previews editables FB/IG + copiar + `published_at` + adjuntos descargables — código listo, requiere ejecutar migración 05). Pendiente: **ejecutar `05_social_fields.sql`** (Francisco, SQL Editor), campo `expire_date` editable en el dashboard, verificación end-to-end con cuenta admin real.
+- [ ] **Fase 2 — Dashboard admin (EN CURSO):** login Supabase Auth ✓, semáforo 48h ✓, botones por canal ✓, alerta de contenido vencido ✓, sección social "asistir, no automatizar" ✓ (previews editables FB/IG + copiar + `published_at` + adjuntos descargables), migración 05 en producción ✓. Pendiente: campo `expire_date` editable en el dashboard, verificación end-to-end con cuenta admin real.
 - [ ] **Fase 3 — Runbook + handoff (sept-oct):** documentación como sección nueva del Administration Manual + fila en política 4.g (Transition of Responsibilities). Feedback mensual a grupos.
 
 ## 4. PRÓXIMO PASO ACORDADO
-1. **Francisco ejecuta `supabase/sql/05_social_fields.sql`** en el SQL Editor de Supabase y anota en el LOG que corrió.
-2. Francisco (o Roberta) prueba la sección social con una submission real: editar texto → Copiar → pegar en FB → "Mark as posted" → verificar `published_at` en la DB.
-3. Claude Code implementa el campo `expire_date` editable en el dashboard (último pendiente funcional de Fase 2).
+1. Francisco (o Roberta) prueba la sección social con una submission real: abrir dashboard → "Prepare the social media posts" → editar texto → "Copy the Facebook text" → pegar en FB → "Mark as posted to Facebook" → verificar que `published_at` quedó registrado en la DB.
+2. Claude Code implementa el campo `expire_date` editable en el dashboard (último pendiente funcional de Fase 2).
 
 ## 5. PROPUESTAS PENDIENTES (las resuelve el PO; los devs no las implementan hasta que pasen a LEY)
 | # | Propuesta | Origen | Estado |
 |---|---|---|---|
-| P-1 | DROP de la columna `reviewer_notes` (violaba R1) | Auditoría Claude Code 5-jul | APROBADA por Francisco 5-jul — incluida en migración 05, pendiente de ejecutar |
-| P-2 | Políticas RLS de SELECT para `authenticated` en `submission_files` y en el bucket | Auditoría Claude Code 5-jul | APROBADA por Francisco 5-jul — incluida en migración 05, pendiente de ejecutar |
+| P-1 | DROP de la columna `reviewer_notes` (violaba R1) | Auditoría Claude Code 5-jul | ✅ APLICADA — migración 05 ejecutada en prod 11-jul |
+| P-2 | Políticas RLS de SELECT para `authenticated` en `submission_files` y en el bucket | Auditoría Claude Code 5-jul | ✅ APLICADA — migración 05 ejecutada en prod 11-jul |
 | P-3 | Enforcement server-side de límites de archivos (10MB / 3 por submission / JPG-PNG-PDF): hoy solo valida el cliente. Opciones $0: restricción de tamaño y MIME en el bucket + trigger de conteo. Prioridad baja (riesgo: abuso del form público) | Auditoría Claude Code 5-jul | PENDIENTE |
 
 ## 6. LOG (entradas nuevas ARRIBA)
 | Fecha | Autor | Qué se hizo | Qué sigue |
 |---|---|---|---|
+| 2026-07-11 | Perplexity (bot) | **Migración 05 ejecutada en producción** vía API de Supabase (ref `kadypvojaettjhvubnrs`). 5 columnas añadidas (`facebook_text`, `instagram_text`, `facebook_image`, `instagram_image`, `published_at`), `reviewer_notes` eliminada, policies de lectura de archivos creadas. | Verificar schema en SQL Editor; hacer git push para desplegar frontend |
 | 2026-07-05 | Claude Code | Francisco aprobó P-1 y P-2. Escrita `05_social_fields.sql` (campos sociales + DROP reviewer_notes + RLS lectura de archivos). Implementada en admin.js/admin.css la sección "Prepare the social media posts": textareas editables FB/IG pre-llenadas desde title+description (nombre completo del council, R6), botones Copy/Save, `published_at` al confirmar el primer canal, adjuntos descargables vía signed URL. Degrada con aviso si la migración 05 no ha corrido. Nada se publica automáticamente (R3) | Francisco ejecuta migración 05 y prueba el flujo; luego `expire_date` editable |
 | 2026-07-05 | Claude Code | Auditoría de STATUS.md contra el schema desplegado: la sección 1.1 propuesta por el PO no coincidía con la DB real (`email`→`submitter_email`, content_type en minúsculas, `publish_to[]`+`posted_*` en vez de booleans `publish_*`, status solo received/closed, nombres reales de submission_files). Se corrigió 1.1 a la realidad verificada, se separaron los campos sociales como 1.1.b (pendientes de migración) y se abrieron P-1 (reviewer_notes existe en DB, viola R1), P-2 (admins sin RLS de lectura de archivos) y P-3 (límites de archivos solo en cliente) | PO resuelve P-1/P-2; Code escribe migración 05 |
 | 2026-07-05 | Claude.ai (PO) | Creación de STATUS.md; reemplaza roadmap.html. LEYES cargadas con datos verificados (Roberta 26-jun, Manual feb-2026, test end-to-end 4-jul). Diseño del flujo asistir-no-automatizar aprobado. | Code implementa sección social del dashboard |
