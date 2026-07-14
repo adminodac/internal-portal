@@ -54,7 +54,13 @@
 | posted_website | boolean NOT NULL | default false — ídem para website |
 | posted_instagram | boolean NOT NULL | default false — ídem para IG |
 | status | text NOT NULL | CHECK: `'received'` \| `'closed'`. El progreso por canal vive en los `posted_*`, NO en status |
-| reviewer_notes | text | ⚠️ viola R1. La migración 05 la DROPEA — deja de existir en cuanto Francisco la ejecute. PROHIBIDO leerla o escribirla desde cualquier código |
+| facebook_text | text | flujo "asistir": texto sugerido editable (migración 05, en producción) |
+| instagram_text | text | flujo "asistir": texto sugerido editable (migración 05, en producción) |
+| facebook_image | text | URL imagen adaptada 1.91:1 (migración 05, en producción) |
+| instagram_image | text | URL imagen adaptada 1:1 (migración 05, en producción) |
+| published_at | timestamptz | lo registra el admin al confirmar publicación (migración 05, en producción) |
+
+`reviewer_notes` NO existe — fue DROPEADA por la migración 05 (violaba R1). PROHIBIDO reintroducirla bajo cualquier nombre.
 
 **Tabla `submission_files` (desplegada):**
 | Columna | Tipo | Regla |
@@ -69,27 +75,31 @@
 Límites de archivos: 10MB por archivo, máx. 3 por submission, tipos JPG/PNG/PDF.
 Hoy se validan SOLO en el cliente (form.js) — no hay enforcement en DB ni en bucket (gap conocido, ver sección 5, P-3).
 
-### 1.1.b Campos del flujo social (`05_social_fields.sql` — ESCRITA, pendiente de que Francisco la ejecute en el SQL Editor)
+### 1.1.b Tabla `groups` (`06_groups.sql` — ESCRITA, pendiente de que Perplexity la ejecute)
 
-La migración ya existe en `supabase/sql/05_social_fields.sql` e incluye estos
-campos + el DROP de `reviewer_notes` (P-1) + las políticas de lectura de
-archivos (P-2). Hasta que corra, estos campos NO están en la DB — el dashboard
-lo detecta y degrada solo (muestra un aviso en lugar del editor social):
+Reemplaza la lista de 18 grupos hardcodeada en `index.html` por una tabla editable
+desde el dashboard (sección "Manage Groups"). `submissions.group_name` sigue
+siendo texto libre — esta tabla NO es una FK, así que desactivar o renombrar un
+grupo aquí nunca toca submissions históricas.
 
 | Columna | Tipo | Regla |
 |---|---|---|
-| facebook_text | text | flujo "asistir": texto sugerido editable |
-| instagram_text | text | flujo "asistir": texto sugerido editable |
-| facebook_image | text | URL imagen adaptada 1.91:1 |
-| instagram_image | text | URL imagen adaptada 1:1 |
-| published_at | timestamptz | lo registra el admin al confirmar publicación |
+| id | uuid PK | default gen_random_uuid() |
+| name | text NOT NULL UNIQUE | nombre exacto mostrado en el dropdown |
+| active | boolean NOT NULL | default true. false = oculto del form público pero conservado para historial. NUNCA se borra una fila, solo se desactiva |
+| created_at | timestamptz NOT NULL | default now() |
 
-El código del dashboard ya está escrito contra estos nombres, con guardas (`'campo' in row`) para no romper mientras la migración no corra. Cuando Francisco la ejecute, anotarlo en el LOG.
+Migración incluye seed de los 18 grupos actuales. Hasta que corra, el form público
+degrada mostrando "Could not load groups, please refresh" (código con guarda,
+no rompe la página).
 
-### 1.1.c RLS (desplegada en `02_rls.sql` + `04_admin_rls.sql`; `05` agrega lectura de archivos)
+### 1.1.c RLS (desplegada en `02_rls.sql` + `04_admin_rls.sql` + `05_social_fields.sql`, en producción desde 11-jul; `06_groups.sql` pendiente)
 - `submissions`: INSERT para `anon` (form público); SELECT y UPDATE para `authenticated` (admins). Nadie tiene DELETE.
-- `submission_files`: INSERT para `anon`; SELECT para `authenticated` (llega con la migración 05).
-- Storage bucket `submission-files`: INSERT para `anon`; SELECT para `authenticated` (llega con la migración 05; el dashboard descarga vía signed URLs).
+- `submission_files`: INSERT para `anon`; SELECT para `authenticated`.
+- Storage bucket `submission-files`: INSERT para `anon`; SELECT para `authenticated` (el dashboard descarga vía signed URLs).
+- `groups` (pendiente de migración 06): SELECT para `anon` solo donde `active = true`; SELECT/INSERT/UPDATE completos para `authenticated`. Sin DELETE para nadie.
+
+⚠️ **Incidente 13-jul:** una migración de rate-limit no autorizada (`20260705_anon_rls_rate_limit.sql`, aplicada por Perplexity sin pasar por PROPUESTA PENDIENTE) reemplazó las policies `anon_can_submit` / `anon_can_insert_file_records` con versiones que contaban filas recientes, rompiendo el formulario público. Se revirtió a mano el mismo día. Regla reforzada: **ningún cambio de RLS se ejecuta sin aparecer primero en la sección 5 como PROPUESTA PENDIENTE**, sin excepción, incluso en modo "arreglo urgente".
 
 ### 1.2 Reglas de negocio (validadas con Roberta por escrito — no se discuten con los devs)
 - **R1. Sin notas internas.** No existe `reviewer_notes` ni `notes` ni equivalente. Confirmado 26-jun.
@@ -123,12 +133,16 @@ El código del dashboard ya está escrito contra estos nombres, con guardas (`'c
 
 ## 3. ESTADO POR FASES
 - [x] **Fase 1 — Intake:** formulario público en vivo, escribe en Supabase, emails de confirmación y alerta funcionando. Verificado end-to-end 4-jul (submission "Prueba 1" + email recibido). Fixes del manual aplicados (Instagram, nombre completo).
-- [ ] **Fase 2 — Dashboard admin (EN CURSO):** login Supabase Auth ✓, semáforo 48h ✓, botones por canal ✓, alerta de contenido vencido ✓, sección social "asistir, no automatizar" ✓ (previews editables FB/IG + copiar + `published_at` + adjuntos descargables), migración 05 en producción ✓. Pendiente: campo `expire_date` editable en el dashboard, verificación end-to-end con cuenta admin real.
+- [ ] **Fase 2 — Dashboard admin (EN CURSO):** login Supabase Auth ✓, semáforo 48h ✓, botones por canal ✓, alerta de contenido vencido ✓, `expire_date` editable ✓, sección social "asistir, no automatizar" ✓ (previews editables FB/IG + copiar + `published_at` + adjuntos descargables), migración 05 en producción ✓, sección "Manage Groups" ✓ (código listo, requiere migración 06). Pendiente: **ejecutar `06_groups.sql`**, verificación end-to-end con cuenta admin real.
 - [ ] **Fase 3 — Runbook + handoff (sept-oct):** documentación como sección nueva del Administration Manual + fila en política 4.g (Transition of Responsibilities). Feedback mensual a grupos.
 
 ## 4. PRÓXIMO PASO ACORDADO
-1. Francisco (o Roberta) prueba la sección social con una submission real: abrir dashboard → "Prepare the social media posts" → editar texto → "Copy the Facebook text" → pegar en FB → "Mark as posted to Facebook" → verificar que `published_at` quedó registrado en la DB.
-2. Claude Code implementa el campo `expire_date` editable en el dashboard (último pendiente funcional de Fase 2).
+1. **Perplexity ejecuta `supabase/sql/06_groups.sql`** — instrucción exacta abajo. No modificar el SQL, no tocar ninguna otra policy mientras se ejecuta (ver incidente 13-jul en 1.1.c).
+2. Francisco (o Roberta) prueba en el dashboard: Manage Groups → agregar un grupo de prueba → verificar que aparece en el dropdown del form público → desactivarlo → verificar que desaparece del dropdown pero no rompe nada.
+3. Francisco (o Roberta) prueba la sección social con una submission real: "Prepare the social media posts" → editar texto → "Copy the Facebook text" → pegar en FB → "Mark as posted to Facebook" → verificar `published_at`.
+
+### Instrucción para Perplexity — ejecutar 06_groups.sql
+Pega el contenido completo de `supabase/sql/06_groups.sql` en el SQL Editor de Supabase (ref `kadypvojaettjhvubnrs`) y ejecútalo tal cual. **No cambies ninguna condición de las policies, no agregues políticas extra, no toques `storage.objects` ni ninguna otra tabla mientras lo haces** — el incidente del 13-jul fue exactamente por una modificación no solicitada durante una ejecución. Si algo falla, repórtalo aquí sin intentar arreglarlo por tu cuenta. Verificación esperada: `SELECT name, active FROM public.groups ORDER BY name;` devuelve 18 filas, todas `active = true`.
 
 ## 5. PROPUESTAS PENDIENTES (las resuelve el PO; los devs no las implementan hasta que pasen a LEY)
 | # | Propuesta | Origen | Estado |
@@ -136,10 +150,14 @@ El código del dashboard ya está escrito contra estos nombres, con guardas (`'c
 | P-1 | DROP de la columna `reviewer_notes` (violaba R1) | Auditoría Claude Code 5-jul | ✅ APLICADA — migración 05 ejecutada en prod 11-jul |
 | P-2 | Políticas RLS de SELECT para `authenticated` en `submission_files` y en el bucket | Auditoría Claude Code 5-jul | ✅ APLICADA — migración 05 ejecutada en prod 11-jul |
 | P-3 | Enforcement server-side de límites de archivos (10MB / 3 por submission / JPG-PNG-PDF): hoy solo valida el cliente. Opciones $0: restricción de tamaño y MIME en el bucket + trigger de conteo. Prioridad baja (riesgo: abuso del form público) | Auditoría Claude Code 5-jul | PENDIENTE |
+| P-4 | Tabla `groups` para reemplazar el dropdown hardcodeado, con sección "Manage Groups" en el dashboard (agregar/desactivar grupos, sin login por grupo) | Solicitud Francisco 13-jul | ✅ APROBADA por Francisco 13-jul — `06_groups.sql` escrita, pendiente de que Perplexity la ejecute |
 
 ## 6. LOG (entradas nuevas ARRIBA)
 | Fecha | Autor | Qué se hizo | Qué sigue |
 |---|---|---|---|
+| 2026-07-13 | Claude Code | Nueva tabla `groups` (`06_groups.sql`, aprobada por Francisco: sin login por grupo, gestión desde el dashboard). Frontend: `index.html`/`form.js` cargan el dropdown dinámicamente desde `groups` (antes hardcodeado); `admin.html`/`admin.js`/`admin.css`: sección "Manage Groups" (agregar grupo, activar/desactivar, sin DELETE nunca). `submissions.group_name` sigue siendo texto libre, no FK — cero riesgo para submissions existentes. Probado localmente con datos simulados (XSS-safe, degrada si la tabla no existe aún). Actualizado STATUS.md 1.1/1.1.b/1.1.c que había quedado desactualizado tras confirmarse que la migración 05 sí corrió | Perplexity ejecuta `06_groups.sql` exactamente como está escrita |
+| 2026-07-13 | Claude Code | **INCIDENTE:** Perplexity ejecutó `20260705_anon_rls_rate_limit.sql` sin pasar por PROPUESTA PENDIENTE, reemplazando las policies `anon_can_submit`/`anon_can_insert_file_records` por versiones con límite de 5 submissions/hora, rompiendo la subida de archivos del form público (RLS violation). Diagnosticado con pruebas directas contra prod (uploads reales pasaban, aislando el problema a las policies de conteo). Perplexity restauró las policies originales el mismo día tras varios intentos. Ver 1.1.c para detalle | Sin cambios adicionales de RLS sin pasar por sección 5 primero |
+| 2026-07-13 | Claude Code | Resuelto conflicto de merge: Perplexity había pusheado `expire_date` editable (válido, se mantuvo) junto con `reviewer_notes` (viola R1, columna ya dropeada — se eliminó del código). Dashboard ahora tiene: semáforo, botones por canal, `expire_date` editable, alerta de vencido, adjuntos descargables, sección social — todo verificado sin errores de consola | — |
 | 2026-07-11 | Perplexity (bot) | **Migración 05 ejecutada en producción** vía API de Supabase (ref `kadypvojaettjhvubnrs`). 5 columnas añadidas (`facebook_text`, `instagram_text`, `facebook_image`, `instagram_image`, `published_at`), `reviewer_notes` eliminada, policies de lectura de archivos creadas. | Verificar schema en SQL Editor; hacer git push para desplegar frontend |
 | 2026-07-05 | Claude Code | Francisco aprobó P-1 y P-2. Escrita `05_social_fields.sql` (campos sociales + DROP reviewer_notes + RLS lectura de archivos). Implementada en admin.js/admin.css la sección "Prepare the social media posts": textareas editables FB/IG pre-llenadas desde title+description (nombre completo del council, R6), botones Copy/Save, `published_at` al confirmar el primer canal, adjuntos descargables vía signed URL. Degrada con aviso si la migración 05 no ha corrido. Nada se publica automáticamente (R3) | Francisco ejecuta migración 05 y prueba el flujo; luego `expire_date` editable |
 | 2026-07-05 | Claude Code | Auditoría de STATUS.md contra el schema desplegado: la sección 1.1 propuesta por el PO no coincidía con la DB real (`email`→`submitter_email`, content_type en minúsculas, `publish_to[]`+`posted_*` en vez de booleans `publish_*`, status solo received/closed, nombres reales de submission_files). Se corrigió 1.1 a la realidad verificada, se separaron los campos sociales como 1.1.b (pendientes de migración) y se abrieron P-1 (reviewer_notes existe en DB, viola R1), P-2 (admins sin RLS de lectura de archivos) y P-3 (límites de archivos solo en cliente) | PO resuelve P-1/P-2; Code escribe migración 05 |

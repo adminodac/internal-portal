@@ -49,7 +49,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('submission-form')
           .addEventListener('submit', handleSubmit);
+
+  loadGroups();
 });
+
+/* == GROUPS DROPDOWN ============================================ */
+async function loadGroups() {
+  const sel = document.getElementById('group_name');
+
+  const { data, error } = await db
+    .from('groups')
+    .select('name')
+    .eq('active', true)
+    .order('name');
+
+  if (error || !data || !data.length) {
+    sel.innerHTML = '<option value="">— Could not load groups, please refresh —</option>';
+    return;
+  }
+
+  sel.innerHTML = '<option value="">— Select your group —</option>' +
+    data.map(g => '<option value="' + esc(g.name) + '">' + esc(g.name) + '</option>').join('');
+}
 
 /* == MICRO-INTERACTIONS ======================================= */
 

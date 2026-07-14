@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('login-form').addEventListener('submit', handleLogin);
   document.getElementById('logout-btn').addEventListener('click', handleLogout);
+  document.getElementById('add-group-form').addEventListener('submit', handleAddGroup);
 
   db.auth.onAuthStateChange((_event, session) => {
     if (!session) showLoginView();
@@ -91,6 +92,7 @@ async function enterDashboard(user) {
   document.getElementById('user-email').textContent = user.email;
 
   await loadSubmissions();
+  await loadGroups();
 }
 
 function showLoginView() {
@@ -512,6 +514,72 @@ async function clearField(id, field) {
     cardEl.outerHTML = renderCard(sub);
     attachCardHandlers();
   }
+}
+
+/* == MANAGE GROUPS =============================================== */
+async function loadGroups() {
+  const list = document.getElementById('groups-list');
+  list.innerHTML = '<p class="loading-text">Loading groups…</p>';
+
+  const { data, error } = await db
+    .from('groups')
+    .select('*')
+    .order('name');
+
+  if (error) {
+    list.innerHTML = '<p class="error-text">Could not load groups. Please refresh the page.</p>';
+    return;
+  }
+
+  list.innerHTML = (data || []).map(renderGroupRow).join('');
+
+  document.querySelectorAll('.btn-toggle-group').forEach(btn => {
+    btn.addEventListener('click', () => toggleGroupActive(btn.dataset.id, btn.dataset.active === 'true'));
+  });
+}
+
+function renderGroupRow(group) {
+  return (
+    '<div class="group-row' + (group.active ? '' : ' group-row--inactive') + '">' +
+      '<span class="group-row-name">' + esc(group.name) + '</span>' +
+      '<button type="button" class="btn-toggle-group ' + (group.active ? 'btn-toggle-group--on' : 'btn-toggle-group--off') + '" ' +
+              'data-id="' + group.id + '" data-active="' + group.active + '">' +
+        (group.active ? 'On — shown on form' : 'Off — hidden from form') +
+      '</button>' +
+    '</div>'
+  );
+}
+
+async function handleAddGroup(e) {
+  e.preventDefault();
+  const errEl  = document.getElementById('groups-error');
+  errEl.hidden = true;
+
+  const input = document.getElementById('new-group-name');
+  const name  = input.value.trim();
+  if (!name) return;
+
+  const { error } = await db.from('groups').insert({ name });
+
+  if (error) {
+    errEl.textContent = error.code === '23505'
+      ? 'A group with that name already exists.'
+      : 'Could not add this group. Please try again.';
+    errEl.hidden = false;
+    return;
+  }
+
+  input.value = '';
+  await loadGroups();
+}
+
+async function toggleGroupActive(id, currentlyActive) {
+  const { error } = await db.from('groups').update({ active: !currentlyActive }).eq('id', id);
+  if (error) {
+    alert('Could not update this group. Please try again.');
+    return;
+  }
+  await loadGroups();
 }
 
 /* == UTILITIES =================================================== */
