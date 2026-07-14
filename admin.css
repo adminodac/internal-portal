@@ -330,37 +330,53 @@
   background: var(--teal-light);
 }
 
-/* -- Social posts ("assist, don't automate") --------------------- */
-.social-section {
-  margin-top: 16px;
-  border-top: 1px solid var(--border);
-  padding-top: 16px;
+/* -- Card tabs (Details / Publish / Social) ----------------------- */
+.card-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  margin: 16px 0 0;
 }
 
-.social-note {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-.btn-social-toggle {
+.card-tab-btn {
   font-family: inherit;
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--teal-dark);
-  background: var(--surface);
-  border: 2px solid var(--teal-mid);
-  border-radius: var(--radius-sm);
-  padding: 12px 18px;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 16px;
+  margin-bottom: -1px;
   cursor: pointer;
-  transition: background var(--transition);
+  transition: color var(--transition), border-color var(--transition);
 }
 
-.btn-social-toggle:hover {
-  background: var(--teal-xlight);
+.card-tab-btn:hover {
+  color: var(--teal-dark);
 }
 
-.social-panel {
-  margin-top: 16px;
+.card-tab-btn.is-active {
+  color: var(--teal-dark);
+  border-bottom-color: var(--teal-mid);
+}
+
+.card-tab-panel {
+  padding-top: 16px;
+}
+
+.card-tab-panel > .card-description {
+  margin-top: 0;
+}
+
+.card-tab-panel > .card-actions {
+  margin-top: 0;
+}
+
+/* -- Social posts ("assist, don't automate") --------------------- */
+.social-note {
+  color: var(--text-muted);
+  font-size: 0.9rem;
 }
 
 .social-help {

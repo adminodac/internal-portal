@@ -24,8 +24,8 @@ const CHANNEL_LABELS = {
 let db               = null;
 let submissionsCache = [];
 let filesCache       = {};        // submission_id -> array of file records
-const openSocialPanels = new Set(); // ids of cards with the social panel open
-const socialDrafts     = {};        // "id:channel" -> unsaved textarea edits
+const activeCardTab  = {};        // submission id -> 'details' | 'publish' | 'social'
+const socialDrafts   = {};        // "id:channel" -> unsaved textarea edits
 
 /* -- Bootstrap ------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', async () => {
@@ -181,8 +181,64 @@ function renderSubmissions() {
 function renderCard(sub) {
   const deadline  = deadlineInfo(sub.created_at);
   const isExpired = sub.expire_date && parseDate(sub.expire_date) < startOfToday();
+  const isClosed  = sub.status === 'closed';
 
-  /* --- Channel buttons ---------------------------------------- */
+  const socialChannels = (sub.publish_to || []).filter(c => c === 'facebook' || c === 'instagram');
+  const hasSocialTab    = !isClosed && socialChannels.length > 0;
+
+  const activeTab = activeCardTab[sub.id] || 'details';
+
+  const tabBar =
+    '<div class="card-tabs" role="tablist">' +
+      cardTabButton(sub.id, 'details', 'Details', activeTab) +
+      cardTabButton(sub.id, 'publish', 'Publish', activeTab) +
+      (hasSocialTab ? cardTabButton(sub.id, 'social', 'Social', activeTab) : '') +
+    '</div>';
+
+  return (
+    '<div class="submission-card' + (isClosed ? ' is-closed' : '') + '" data-card-id="' + sub.id + '">' +
+      (isExpired
+        ? '<div class="expire-banner">⚠ Remove from website — expired ' + formatDate(sub.expire_date) + '</div>'
+        : '') +
+      '<div class="card-top">' +
+        '<div class="card-main">' +
+          '<div class="card-group">' + esc(sub.group_name) + '</div>' +
+          '<div class="card-title">' + esc(sub.title) + '</div>' +
+          '<div class="card-meta">' +
+            esc(TYPE_LABELS[sub.content_type] || sub.content_type) +
+            ' &middot; Received ' + formatDate(sub.created_at) +
+            (sub.event_date ? ' &middot; Event on ' + formatDate(sub.event_date) : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="card-deadline ' + deadline.className + '">' + deadline.label + '</div>' +
+      '</div>' +
+      tabBar +
+      renderDetailsTab(sub, activeTab) +
+      renderPublishTab(sub, activeTab, isClosed) +
+      (hasSocialTab ? renderSocialTab(sub, activeTab) : '') +
+    '</div>'
+  );
+}
+
+function cardTabButton(id, tab, label, activeTab) {
+  return '<button type="button" class="card-tab-btn' + (tab === activeTab ? ' is-active' : '') + '" ' +
+    'data-id="' + id + '" data-tab="' + tab + '">' + label + '</button>';
+}
+
+function cardTabPanel(tab, activeTab, innerHtml) {
+  return '<div class="card-tab-panel" data-tab="' + tab + '"' + (tab === activeTab ? '' : ' hidden') + '>' + innerHtml + '</div>';
+}
+
+/* --- Details tab: description + attachments ---------------------- */
+function renderDetailsTab(sub, activeTab) {
+  return cardTabPanel('details', activeTab,
+    '<p class="card-description">' + esc(sub.description) + '</p>' +
+    renderAttachments(sub)
+  );
+}
+
+/* --- Publish tab: channel buttons, complete, expire_date ---------- */
+function renderPublishTab(sub, activeTab, isClosed) {
   const channelButtons = (sub.publish_to || []).map(channel => {
     const posted = sub['posted_' + channel];
     const label  = CHANNEL_LABELS[channel] || channel;
@@ -191,11 +247,10 @@ function renderCard(sub) {
       : '<button type="button" class="btn-channel" data-id="' + sub.id + '" data-channel="' + channel + '">Mark as posted to ' + esc(label) + '</button>';
   }).join('');
 
-  const completeButton = sub.status !== 'closed'
+  const completeButton = !isClosed
     ? '<button type="button" class="btn-complete" data-id="' + sub.id + '">Mark as complete</button>'
     : '';
 
-  /* --- expire_date inline editor ------------------------------ */
   const expireValue = sub.expire_date || '';
   const expireEditor =
     '<div class="card-field-row">' +
@@ -214,30 +269,18 @@ function renderCard(sub) {
       '</div>' +
     '</div>';
 
-  return (
-    '<div class="submission-card' + (sub.status === 'closed' ? ' is-closed' : '') + '" data-card-id="' + sub.id + '">' +
-      (isExpired
-        ? '<div class="expire-banner">⚠ Remove from website — expired ' + formatDate(sub.expire_date) + '</div>'
-        : '') +
-      '<div class="card-top">' +
-        '<div class="card-main">' +
-          '<div class="card-group">' + esc(sub.group_name) + '</div>' +
-          '<div class="card-title">' + esc(sub.title) + '</div>' +
-          '<div class="card-meta">' +
-            esc(TYPE_LABELS[sub.content_type] || sub.content_type) +
-            ' &middot; Received ' + formatDate(sub.created_at) +
-            (sub.event_date ? ' &middot; Event on ' + formatDate(sub.event_date) : '') +
-          '</div>' +
-        '</div>' +
-        '<div class="card-deadline ' + deadline.className + '">' + deadline.label + '</div>' +
-      '</div>' +
-      '<p class="card-description">' + esc(sub.description) + '</p>' +
-      expireEditor +
-      renderAttachments(sub) +
-      '<div class="card-actions">' + channelButtons + completeButton + '</div>' +
-      renderSocialSection(sub) +
-    '</div>'
+  return cardTabPanel('publish', activeTab,
+    '<div class="card-actions">' + channelButtons + completeButton + '</div>' +
+    expireEditor
   );
+}
+
+function switchCardTab(id, tab) {
+  const card = document.querySelector('.submission-card[data-card-id="' + id + '"]');
+  if (!card) return;
+  card.querySelectorAll('.card-tab-btn').forEach(b => b.classList.toggle('is-active', b.dataset.tab === tab));
+  card.querySelectorAll('.card-tab-panel').forEach(p => { p.hidden = p.dataset.tab !== tab; });
+  activeCardTab[id] = tab;
 }
 
 /* == ATTACHED FILES ============================================= */
@@ -271,21 +314,16 @@ async function openFile(path) {
    pastes it into Facebook/Instagram by hand. Nothing is ever
    published automatically.                                        */
 
-function renderSocialSection(sub) {
-  if (sub.status === 'closed') return '';
-
-  const channels = (sub.publish_to || []).filter(c => c === 'facebook' || c === 'instagram');
-  if (!channels.length) return '';
-
+function renderSocialTab(sub, activeTab) {
   // The social columns arrive with SELECT * only after migration
   // 05_social_fields.sql has run. Until then, show a plain notice.
   if (!('facebook_text' in sub)) {
-    return '<div class="social-section"><p class="social-note">' +
-      'The social post editor needs a database update (05_social_fields.sql) before it can be used.' +
-      '</p></div>';
+    return cardTabPanel('social', activeTab,
+      '<p class="social-note">The social post editor needs a database update (05_social_fields.sql) before it can be used.</p>'
+    );
   }
 
-  const isOpen = openSocialPanels.has(sub.id);
+  const channels = (sub.publish_to || []).filter(c => c === 'facebook' || c === 'instagram');
 
   const editors = channels.map(channel => {
     const label    = CHANNEL_LABELS[channel];
@@ -309,17 +347,10 @@ function renderSocialSection(sub) {
     );
   }).join('');
 
-  return (
-    '<div class="social-section">' +
-      '<button type="button" class="btn-social-toggle" data-id="' + sub.id + '">' +
-        (isOpen ? 'Hide the social media posts' : 'Prepare the social media posts') +
-      '</button>' +
-      '<div class="social-panel"' + (isOpen ? '' : ' hidden') + '>' +
-        '<p class="social-help">Edit the text below if you want, click "Copy", then paste it into ' +
-          'Facebook or Instagram yourself. Nothing is posted automatically.</p>' +
-        editors +
-      '</div>' +
-    '</div>'
+  return cardTabPanel('social', activeTab,
+    '<p class="social-help">Edit the text below if you want, click "Copy", then paste it into ' +
+      'Facebook or Instagram yourself. Nothing is posted automatically.</p>' +
+    editors
   );
 }
 
@@ -378,12 +409,6 @@ function flashButton(button, text) {
   setTimeout(() => { button.textContent = original; }, 2000);
 }
 
-function toggleSocialPanel(id) {
-  if (openSocialPanels.has(id)) openSocialPanels.delete(id);
-  else openSocialPanels.add(id);
-  renderSubmissions();
-}
-
 function deadlineInfo(createdAt) {
   const created  = new Date(createdAt);
   const deadline = new Date(created.getTime() + 48 * 60 * 60 * 1000);
@@ -414,8 +439,8 @@ function attachCardHandlers() {
   document.querySelectorAll('.btn-file').forEach(btn => {
     btn.addEventListener('click', () => openFile(btn.dataset.path));
   });
-  document.querySelectorAll('.btn-social-toggle').forEach(btn => {
-    btn.addEventListener('click', () => toggleSocialPanel(btn.dataset.id));
+  document.querySelectorAll('.card-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchCardTab(btn.dataset.id, btn.dataset.tab));
   });
   document.querySelectorAll('.btn-social-save').forEach(btn => {
     btn.addEventListener('click', () => saveSocialText(btn.dataset.id, btn.dataset.channel, btn));
