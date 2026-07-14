@@ -69,6 +69,34 @@
 
         <h1 class="admin-dashboard-title">Dashboard</h1>
 
+        <div id="search-bar" class="search-bar">
+          <div class="search-input-wrap">
+            <input type="text" id="search-query" class="search-input"
+                   placeholder="Search by group, title or description…" autocomplete="off">
+          </div>
+          <select id="search-month" class="search-select" aria-label="Filter by month">
+            <option value="">All months</option>
+            <option value="0">January</option>
+            <option value="1">February</option>
+            <option value="2">March</option>
+            <option value="3">April</option>
+            <option value="4">May</option>
+            <option value="5">June</option>
+            <option value="6">July</option>
+            <option value="7">August</option>
+            <option value="8">September</option>
+            <option value="9">October</option>
+            <option value="10">November</option>
+            <option value="11">December</option>
+          </select>
+          <select id="search-year" class="search-select" aria-label="Filter by year">
+            <option value="">All years</option>
+          </select>
+          <input type="date" id="search-day" class="search-select" aria-label="Filter by an exact day"
+                 title="Or pick an exact day">
+          <button type="button" id="search-clear" class="btn-search-clear" hidden>Clear filters</button>
+        </div>
+
         <div class="page-tabs" role="tablist">
           <button type="button" class="page-tab-btn is-active" data-page-tab="review">
             To review <span id="review-count" class="page-tab-badge">0</span>

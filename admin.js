@@ -27,6 +27,8 @@ let filesCache       = {};        // submission_id -> array of file records
 const activeCardTab  = {};        // submission id -> 'details' | 'publish' | 'social'
 const socialDrafts   = {};        // "id:channel" -> unsaved textarea edits
 
+const searchState = { query: '', month: '', year: '', day: '' }; // filters applied to both tabs
+
 /* -- Bootstrap ------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', async () => {
   if (typeof supabase === 'undefined') {
@@ -47,6 +49,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('.page-tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchPageTab(btn.dataset.pageTab));
   });
+
+  document.getElementById('search-query').addEventListener('input', handleSearchChange);
+  document.getElementById('search-month').addEventListener('change', handleSearchChange);
+  document.getElementById('search-year').addEventListener('change', handleSearchChange);
+  document.getElementById('search-day').addEventListener('change', handleSearchChange);
+  document.getElementById('search-clear').addEventListener('click', clearSearch);
 
   db.auth.onAuthStateChange((_event, session) => {
     if (!session) showLoginView();
@@ -144,7 +152,22 @@ async function loadSubmissions() {
 
   submissionsCache = data || [];
   await loadFiles();
+  populateYearFilter();
   renderSubmissions();
+}
+
+function populateYearFilter() {
+  const select = document.getElementById('search-year');
+  const currentValue = select.value;
+
+  const years = Array.from(new Set(
+    submissionsCache.map(s => parseDate(s.created_at).getFullYear())
+  )).sort((a, b) => b - a);
+
+  select.innerHTML = '<option value="">All years</option>' +
+    years.map(y => '<option value="' + y + '">' + y + '</option>').join('');
+
+  select.value = years.includes(+currentValue) ? currentValue : '';
 }
 
 async function loadFiles() {
@@ -168,20 +191,74 @@ function renderSubmissions() {
   const open   = submissionsCache.filter(s => s.status !== 'closed');
   const closed = submissionsCache.filter(s => s.status === 'closed');
 
+  const openFiltered   = filterSubmissions(open);
+  const closedFiltered = filterSubmissions(closed);
+
   const openList   = document.getElementById('submission-list');
   const closedList = document.getElementById('completed-list');
 
-  openList.innerHTML = open.length
-    ? open.map(renderCard).join('')
-    : '<p class="empty-text">No open submissions right now.</p>';
+  openList.innerHTML = openFiltered.length
+    ? openFiltered.map(renderCard).join('')
+    : ('<p class="empty-text">' + (open.length ? 'No submissions match your search.' : 'No open submissions right now.') + '</p>');
 
-  closedList.innerHTML = closed.length
-    ? closed.map(renderCard).join('')
-    : '<p class="empty-text">Nothing completed yet.</p>';
+  closedList.innerHTML = closedFiltered.length
+    ? closedFiltered.map(renderCard).join('')
+    : ('<p class="empty-text">' + (closed.length ? 'No submissions match your search.' : 'Nothing completed yet.') + '</p>');
 
+  // The badge always reflects total workload, not the current search.
   document.getElementById('review-count').textContent = open.length;
 
   attachCardHandlers();
+}
+
+/* == SEARCH / DATE FILTER ======================================== */
+function handleSearchChange() {
+  searchState.query = document.getElementById('search-query').value.trim().toLowerCase();
+  searchState.month = document.getElementById('search-month').value;
+  searchState.year  = document.getElementById('search-year').value;
+  searchState.day   = document.getElementById('search-day').value;
+
+  const active = searchState.query || searchState.month || searchState.year || searchState.day;
+  document.getElementById('search-clear').hidden = !active;
+
+  renderSubmissions();
+}
+
+function clearSearch() {
+  document.getElementById('search-query').value = '';
+  document.getElementById('search-month').value = '';
+  document.getElementById('search-year').value  = '';
+  document.getElementById('search-day').value   = '';
+  handleSearchChange();
+}
+
+function filterSubmissions(list) {
+  return list.filter(sub => {
+    if (searchState.query) {
+      const haystack = (sub.group_name + ' ' + sub.title + ' ' + sub.description).toLowerCase();
+      if (!haystack.includes(searchState.query)) return false;
+    }
+
+    const created = parseDate(sub.created_at);
+
+    if (searchState.day) {
+      // Exact day picked in the date input overrides month/year.
+      if (formatISODate(created) !== searchState.day) return false;
+      return true;
+    }
+
+    if (searchState.month && created.getMonth() !== +searchState.month) return false;
+    if (searchState.year  && created.getFullYear() !== +searchState.year) return false;
+
+    return true;
+  });
+}
+
+function formatISODate(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + d;
 }
 
 /* == PAGE-LEVEL TABS (To review / Completed / Manage groups) ===== */
@@ -192,6 +269,8 @@ function switchPageTab(tab) {
   document.querySelectorAll('.page-tab-panel').forEach(p => {
     p.hidden = p.dataset.pageTab !== tab;
   });
+  // Search/date filters only apply to submissions, not to Manage Groups.
+  document.getElementById('search-bar').hidden = tab === 'groups';
 }
 
 function renderCard(sub) {

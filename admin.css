@@ -95,6 +95,60 @@
   color: var(--text-muted);
 }
 
+/* -- Search / date filter ------------------------------------------ */
+.search-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-input-wrap {
+  flex: 1;
+  min-width: 220px;
+}
+
+.search-input,
+.search-select {
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+}
+
+.search-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.search-input:focus,
+.search-select:focus {
+  outline: none;
+  border-color: var(--teal-mid);
+  box-shadow: 0 0 0 2px var(--teal-light);
+}
+
+.btn-search-clear {
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--teal-dark);
+  background: var(--teal-xlight);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 11px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition);
+}
+
+.btn-search-clear:hover {
+  background: var(--teal-light);
+}
+
 /* -- Page-level tabs (To review / Completed / Manage groups) ----- */
 .page-tabs {
   display: flex;
