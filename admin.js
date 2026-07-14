@@ -44,6 +44,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('logout-btn').addEventListener('click', handleLogout);
   document.getElementById('add-group-form').addEventListener('submit', handleAddGroup);
 
+  document.querySelectorAll('.page-tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => switchPageTab(btn.dataset.pageTab));
+  });
+
   db.auth.onAuthStateChange((_event, session) => {
     if (!session) showLoginView();
   });
@@ -175,7 +179,19 @@ function renderSubmissions() {
     ? closed.map(renderCard).join('')
     : '<p class="empty-text">Nothing completed yet.</p>';
 
+  document.getElementById('review-count').textContent = open.length;
+
   attachCardHandlers();
+}
+
+/* == PAGE-LEVEL TABS (To review / Completed / Manage groups) ===== */
+function switchPageTab(tab) {
+  document.querySelectorAll('.page-tab-btn').forEach(b => {
+    b.classList.toggle('is-active', b.dataset.pageTab === tab);
+  });
+  document.querySelectorAll('.page-tab-panel').forEach(p => {
+    p.hidden = p.dataset.pageTab !== tab;
+  });
 }
 
 function renderCard(sub) {

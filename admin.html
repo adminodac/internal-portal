@@ -67,27 +67,39 @@
     <section id="dashboard-view" class="admin-dashboard-section" hidden>
       <div class="admin-dashboard-container">
 
-        <h1 class="admin-dashboard-title">Submissions To Review</h1>
+        <h1 class="admin-dashboard-title">Dashboard</h1>
 
-        <div id="submission-list" class="submission-list">
-          <p class="loading-text">Loading submissions…</p>
+        <div class="page-tabs" role="tablist">
+          <button type="button" class="page-tab-btn is-active" data-page-tab="review">
+            To review <span id="review-count" class="page-tab-badge">0</span>
+          </button>
+          <button type="button" class="page-tab-btn" data-page-tab="completed">Completed</button>
+          <button type="button" class="page-tab-btn" data-page-tab="groups">Manage groups</button>
         </div>
 
-        <h2 class="admin-dashboard-subtitle">Completed</h2>
-        <div id="completed-list" class="submission-list submission-list--completed"></div>
+        <div class="page-tab-panel" data-page-tab="review">
+          <div id="submission-list" class="submission-list">
+            <p class="loading-text">Loading submissions…</p>
+          </div>
+        </div>
 
-        <h2 class="admin-dashboard-subtitle">Manage Groups</h2>
-        <p class="groups-help">Groups shown here appear in the dropdown on the public submission form. Turning a group off hides it from that dropdown but keeps its past submissions.</p>
+        <div class="page-tab-panel" data-page-tab="completed" hidden>
+          <div id="completed-list" class="submission-list submission-list--completed"></div>
+        </div>
 
-        <form id="add-group-form" class="add-group-form">
-          <input type="text" id="new-group-name" class="field-input add-group-input"
-                 placeholder="New group name" autocomplete="off" required>
-          <button type="submit" class="btn-add-group">Add Group</button>
-        </form>
-        <div id="groups-error" class="form-error" hidden role="alert"></div>
+        <div class="page-tab-panel" data-page-tab="groups" hidden>
+          <p class="groups-help">Groups shown here appear in the dropdown on the public submission form. Turning a group off hides it from that dropdown but keeps its past submissions.</p>
 
-        <div id="groups-list" class="groups-list">
-          <p class="loading-text">Loading groups…</p>
+          <form id="add-group-form" class="add-group-form">
+            <input type="text" id="new-group-name" class="field-input add-group-input"
+                   placeholder="New group name" autocomplete="off" required>
+            <button type="submit" class="btn-add-group">Add Group</button>
+          </form>
+          <div id="groups-error" class="form-error" hidden role="alert"></div>
+
+          <div id="groups-list" class="groups-list">
+            <p class="loading-text">Loading groups…</p>
+          </div>
         </div>
 
       </div>
