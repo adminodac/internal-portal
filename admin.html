@@ -129,6 +129,7 @@
           </button>
           <button type="button" class="page-tab-btn" data-page-tab="completed">Completed</button>
           <button type="button" class="page-tab-btn" data-page-tab="groups">Manage groups</button>
+          <button type="button" class="page-tab-btn" data-page-tab="admins">Admins</button>
         </div>
 
         <div class="page-tab-panel" data-page-tab="review">
@@ -139,6 +140,23 @@
 
         <div class="page-tab-panel" data-page-tab="completed" hidden>
           <div id="completed-list" class="submission-list submission-list--completed"></div>
+        </div>
+
+        <div class="page-tab-panel" data-page-tab="admins" hidden>
+          <p class="groups-help">Invite ODAC staff to access the admin dashboard. Each person receives an email with a link to set their password.</p>
+
+          <form id="invite-form" class="add-group-form">
+            <input type="email" id="invite-email" class="field-input add-group-input"
+                   placeholder="email@example.com" autocomplete="off" required>
+            <button type="submit" class="btn-add-group">Send invitation</button>
+          </form>
+          <div id="invite-error"   class="form-error"   hidden role="alert"></div>
+          <div id="invite-success" class="form-success" hidden role="status"></div>
+
+          <h2 class="admin-dashboard-subtitle" style="margin-top:32px;margin-bottom:12px;">Current admins</h2>
+          <div id="admins-list" class="admin-list">
+            <p class="loading-text">Loading admins…</p>
+          </div>
         </div>
 
         <div class="page-tab-panel" data-page-tab="groups" hidden>

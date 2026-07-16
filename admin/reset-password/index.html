@@ -45,10 +45,10 @@
           </p>
         </div>
 
-        <!-- State: form -->
+        <!-- State: form (used for both password reset and invite acceptance) -->
         <div id="rp-form-wrap" hidden>
-          <h1 class="admin-login-title">Set New Password</h1>
-          <p class="admin-login-sub">Enter your new password below.</p>
+          <h1 id="rp-form-title" class="admin-login-title">Set New Password</h1>
+          <p  id="rp-form-sub"   class="admin-login-sub">Enter your new password below.</p>
 
           <form id="rp-form" novalidate>
             <div class="field-group">
@@ -123,15 +123,22 @@
     btn.disabled = loading;
   }
 
-  // Supabase processes the URL hash / code param on createClient.
-  // PASSWORD_RECOVERY fires once the session is established.
+  // Supabase fires PASSWORD_RECOVERY for reset links,
+  // and SIGNED_IN (with type=invite in URL) for invitation links.
   db.auth.onAuthStateChange(function (event) {
+    var params = new URLSearchParams(window.location.search);
+
     if (event === 'PASSWORD_RECOVERY') {
+      showState('rp-form-wrap');
+    } else if (event === 'SIGNED_IN' && params.get('type') === 'invite') {
+      document.getElementById('rp-form-title').textContent = 'Welcome! Set Your Password';
+      document.getElementById('rp-form-sub').textContent   =
+        'Your invitation has been accepted. Choose a password to access the dashboard.';
       showState('rp-form-wrap');
     }
   });
 
-  // Fallback: if no PASSWORD_RECOVERY event fires within 5 s,
+  // Fallback: if no relevant event fires within 5 s,
   // show the invalid-link message (expired OTP or direct navigation).
   var invalidTimer = setTimeout(function () {
     var wrap = document.getElementById('rp-form-wrap');

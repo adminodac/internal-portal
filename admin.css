@@ -560,6 +560,50 @@
   cursor: wait;
 }
 
+/* -- Admin list (Admins tab) ------------------------------------- */
+.admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+}
+
+.admin-row-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-email {
+  font-size: 0.95rem;
+  font-weight: 500;
+  flex: 1;
+  min-width: 180px;
+}
+
+.admin-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  width: 100%;
+}
+
+.admin-badge-pending {
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: var(--gold-light);
+  color: var(--gold-deep);
+  border-radius: 11px;
+  padding: 2px 10px;
+  white-space: nowrap;
+}
+
 /* -- Forgot password (login page) -------------------------------- */
 .forgot-link-wrap {
   text-align: center;

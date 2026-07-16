@@ -26,6 +26,7 @@ let submissionsCache = [];
 let filesCache       = {};        // submission_id -> array of file records
 const activeCardTab  = {};        // submission id -> 'details' | 'publish' | 'social'
 const socialDrafts   = {};        // "id:channel" -> unsaved textarea edits
+let adminsLoaded     = false;
 
 const searchState = { query: '', month: '', year: '', day: '' }; // filters applied to both tabs
 
@@ -45,6 +46,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('login-form').addEventListener('submit', handleLogin);
   document.getElementById('logout-btn').addEventListener('click', handleLogout);
   document.getElementById('add-group-form').addEventListener('submit', handleAddGroup);
+  document.getElementById('invite-form').addEventListener('submit', handleInviteAdmin);
   document.getElementById('forgot-toggle').addEventListener('click', toggleForgotSection);
   document.getElementById('forgot-form').addEventListener('submit', sendRecoveryEmail);
   document.getElementById('change-password-btn').addEventListener('click', openChangePassword);
@@ -277,8 +279,9 @@ function switchPageTab(tab) {
   document.querySelectorAll('.page-tab-panel').forEach(p => {
     p.hidden = p.dataset.pageTab !== tab;
   });
-  // Search/date filters only apply to submissions, not to Manage Groups.
-  document.getElementById('search-bar').hidden = tab === 'groups';
+  // Search/date filters only apply to submissions tabs.
+  document.getElementById('search-bar').hidden = (tab === 'groups' || tab === 'admins');
+  if (tab === 'admins' && !adminsLoaded) loadAdmins();
 }
 
 function renderCard(sub) {
@@ -737,6 +740,88 @@ function esc(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+/* == INVITE ADMIN + ADMIN LIST =================================== */
+async function loadAdmins() {
+  const list = document.getElementById('admins-list');
+  list.innerHTML = '<p class="loading-text">Loading admins…</p>';
+
+  const { data, error } = await db.functions.invoke('invite-admin', { method: 'GET' });
+
+  if (error || !data?.users) {
+    list.innerHTML = '<p class="error-text">Could not load admins. Please refresh the page.</p>';
+    return;
+  }
+
+  adminsLoaded = true;
+  const users = data.users.slice().sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+  list.innerHTML = users.map(renderAdminRow).join('') ||
+    '<p class="empty-text">No admins found.</p>';
+}
+
+function renderAdminRow(user) {
+  const joined    = formatDate(user.created_at);
+  const lastLogin = user.last_sign_in_at ? formatDate(user.last_sign_in_at) : null;
+  const pending   = !user.email_confirmed_at;
+
+  return (
+    '<div class="admin-row">' +
+      '<div class="admin-row-info">' +
+        '<span class="admin-email">' + esc(user.email || '—') + '</span>' +
+        (pending
+          ? '<span class="admin-badge-pending">Invite pending</span>'
+          : '') +
+        '<span class="admin-meta">Joined ' + joined +
+          (lastLogin ? ' &middot; Last login ' + lastLogin : ' &middot; Never logged in') +
+        '</span>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
+async function handleInviteAdmin(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('invite-error');
+  const sucEl = document.getElementById('invite-success');
+  errEl.hidden = true;
+  sucEl.hidden = true;
+
+  const emailInput = document.getElementById('invite-email');
+  const email      = emailInput.value.trim();
+
+  if (!email || !email.includes('@')) {
+    errEl.textContent = "That email doesn't look right. Please check and try again.";
+    errEl.hidden = false;
+    return;
+  }
+
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.disabled    = true;
+  btn.textContent = 'Sending…';
+
+  const { data, error } = await db.functions.invoke('invite-admin', {
+    method: 'POST',
+    body:   { email },
+  });
+
+  btn.disabled    = false;
+  btn.textContent = 'Send invitation';
+
+  if (error || data?.error) {
+    errEl.textContent = data?.error || 'Something went wrong — please try again or contact Francisco.';
+    errEl.hidden = false;
+    return;
+  }
+
+  sucEl.textContent = 'Invitation sent to ' + email + '. They will receive an email with a link to set their password.';
+  sucEl.hidden = false;
+  emailInput.value = '';
+
+  // Refresh the admin list to show the new pending invite.
+  adminsLoaded = false;
+  await loadAdmins();
 }
 
 /* == FORGOT PASSWORD (login page) ================================ */
