@@ -560,6 +560,119 @@
   cursor: wait;
 }
 
+/* -- Forgot password (login page) -------------------------------- */
+.forgot-link-wrap {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.btn-forgot-link {
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--teal-dark);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.btn-forgot-link:hover {
+  opacity: 0.72;
+}
+
+.forgot-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.forgot-section-title {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+/* shared success banner (forgot + change-password) */
+.form-success {
+  background: #e7f6ec;
+  color: #1a7a3c;
+  border: 1px solid #a3d9b4;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+
+/* -- Change password modal --------------------------------------- */
+.cp-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 900;
+  padding: 20px;
+}
+
+.cp-modal {
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  padding: 32px;
+  width: 100%;
+  max-width: 440px;
+}
+
+.cp-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.cp-modal-title {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.cp-close-btn {
+  font-family: inherit;
+  font-size: 1.1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  line-height: 1;
+  transition: background var(--transition), color var(--transition);
+}
+
+.cp-close-btn:hover {
+  background: var(--error-bg);
+  color: var(--error-text);
+}
+
+.btn-change-password {
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--teal-dark);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 7px 13px;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.btn-change-password:hover {
+  background: var(--teal-xlight);
+}
+
 /* -- Manage Groups ------------------------------------------------ */
 .groups-help {
   color: var(--text-muted);

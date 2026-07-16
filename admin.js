@@ -45,6 +45,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('login-form').addEventListener('submit', handleLogin);
   document.getElementById('logout-btn').addEventListener('click', handleLogout);
   document.getElementById('add-group-form').addEventListener('submit', handleAddGroup);
+  document.getElementById('forgot-toggle').addEventListener('click', toggleForgotSection);
+  document.getElementById('forgot-form').addEventListener('submit', sendRecoveryEmail);
+  document.getElementById('change-password-btn').addEventListener('click', openChangePassword);
+  document.getElementById('cp-close').addEventListener('click', closeChangePassword);
+  document.getElementById('cp-overlay').addEventListener('click', function (e) {
+    if (e.target === this) closeChangePassword();
+  });
+  document.getElementById('cp-form').addEventListener('submit', handleChangePassword);
 
   document.querySelectorAll('.page-tab-btn').forEach(btn => {
     btn.addEventListener('click', () => switchPageTab(btn.dataset.pageTab));
@@ -729,4 +737,134 @@ function esc(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+/* == FORGOT PASSWORD (login page) ================================ */
+function toggleForgotSection() {
+  const section = document.getElementById('forgot-section');
+  const toggle  = document.getElementById('forgot-toggle');
+  section.hidden = !section.hidden;
+  toggle.textContent = section.hidden ? 'Forgot your password?' : '← Back to login';
+  if (!section.hidden) {
+    document.getElementById('forgot-email').focus();
+    document.getElementById('forgot-error').hidden   = true;
+    document.getElementById('forgot-success').hidden = true;
+  }
+}
+
+async function sendRecoveryEmail(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('forgot-error');
+  const sucEl = document.getElementById('forgot-success');
+  errEl.hidden = true;
+  sucEl.hidden = true;
+
+  const email = document.getElementById('forgot-email').value.trim();
+  if (!email || !email.includes('@')) {
+    errEl.textContent = "That email doesn't look right. Please check and try again.";
+    errEl.hidden = false;
+    return;
+  }
+
+  const btn = document.getElementById('forgot-btn');
+  btn.querySelector('.btn-text').hidden    = true;
+  btn.querySelector('.btn-loading').hidden = false;
+  btn.disabled = true;
+
+  await db.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://adminodac.github.io/internal-portal/admin/reset-password/'
+  });
+
+  btn.querySelector('.btn-text').hidden    = false;
+  btn.querySelector('.btn-loading').hidden = true;
+  btn.disabled = false;
+
+  // Same message whether the email exists or not — security best practice.
+  sucEl.textContent = "If that email is registered, you'll receive a recovery link shortly. Check your inbox.";
+  sucEl.hidden = false;
+  document.getElementById('forgot-email').value = '';
+}
+
+/* == CHANGE PASSWORD (dashboard) ================================= */
+function openChangePassword() {
+  document.getElementById('cp-overlay').hidden = false;
+  document.getElementById('cp-form').reset();
+  document.getElementById('cp-error').hidden   = true;
+  document.getElementById('cp-success').hidden = true;
+  document.getElementById('cp-current').focus();
+}
+
+function closeChangePassword() {
+  document.getElementById('cp-overlay').hidden = true;
+}
+
+async function handleChangePassword(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('cp-error');
+  const sucEl = document.getElementById('cp-success');
+  errEl.hidden = true;
+  sucEl.hidden = true;
+
+  const currentPwd = document.getElementById('cp-current').value;
+  const newPwd     = document.getElementById('cp-new').value;
+  const confirmPwd = document.getElementById('cp-confirm').value;
+
+  if (!currentPwd) {
+    errEl.textContent = 'Please enter your current password.';
+    errEl.hidden = false;
+    return;
+  }
+  if (!newPwd || newPwd.length < 6) {
+    errEl.textContent = 'New password must be at least 6 characters.';
+    errEl.hidden = false;
+    return;
+  }
+  if (newPwd !== confirmPwd) {
+    errEl.textContent = "Passwords don't match. Please check and try again.";
+    errEl.hidden = false;
+    return;
+  }
+
+  const { data: { user } } = await db.auth.getUser();
+  if (!user) {
+    errEl.textContent = 'Your session has expired. Please log out and log back in.';
+    errEl.hidden = false;
+    return;
+  }
+
+  const btn = document.getElementById('cp-btn');
+  btn.querySelector('.btn-text').hidden    = true;
+  btn.querySelector('.btn-loading').hidden = false;
+  btn.disabled = true;
+
+  // Verify current password before changing.
+  const { error: signInError } = await db.auth.signInWithPassword({
+    email:    user.email,
+    password: currentPwd
+  });
+
+  if (signInError) {
+    btn.querySelector('.btn-text').hidden    = false;
+    btn.querySelector('.btn-loading').hidden = true;
+    btn.disabled = false;
+    errEl.textContent = 'Your current password is incorrect. Please try again.';
+    errEl.hidden = false;
+    return;
+  }
+
+  const { error } = await db.auth.updateUser({ password: newPwd });
+
+  btn.querySelector('.btn-text').hidden    = false;
+  btn.querySelector('.btn-loading').hidden = true;
+  btn.disabled = false;
+
+  if (error) {
+    errEl.textContent = 'Something went wrong — please try again.';
+    errEl.hidden = false;
+    return;
+  }
+
+  sucEl.textContent = 'Password updated successfully.';
+  sucEl.hidden = false;
+  setTimeout(closeChangePassword, 2000);
 }

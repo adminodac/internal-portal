@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset Password — Osoyoos &amp; District Arts Council</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="../../style.css">
+  <link rel="stylesheet" href="../../admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner admin-header-inner">
+      <div class="header-brand">
+        <a href="https://osoyoosartscouncil.com" target="_blank" rel="noopener" class="brand-link">
+          <img src="../../assets/logo.png"
+               alt="Osoyoos &amp; District Arts Council"
+               class="brand-logo">
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="admin-login-section">
+      <div class="admin-login-card">
+
+        <!-- State: verifying link -->
+        <div id="rp-loading">
+          <h1 class="admin-login-title">Reset Password</h1>
+          <p class="admin-login-sub">Verifying your reset link…</p>
+        </div>
+
+        <!-- State: expired or invalid link -->
+        <div id="rp-invalid" hidden>
+          <h1 class="admin-login-title">Link Expired</h1>
+          <p class="admin-login-sub">
+            This password reset link has expired or is not valid.<br>
+            Please request a new one from the
+            <a href="https://adminodac.github.io/internal-portal/admin" class="rp-link">login page</a>.
+          </p>
+        </div>
+
+        <!-- State: form -->
+        <div id="rp-form-wrap" hidden>
+          <h1 class="admin-login-title">Set New Password</h1>
+          <p class="admin-login-sub">Enter your new password below.</p>
+
+          <form id="rp-form" novalidate>
+            <div class="field-group">
+              <label class="field-label" for="rp-new">New password</label>
+              <input type="password" id="rp-new" class="field-input"
+                     autocomplete="new-password" required minlength="6">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="rp-confirm">Confirm new password</label>
+              <input type="password" id="rp-confirm" class="field-input"
+                     autocomplete="new-password" required minlength="6">
+            </div>
+
+            <div id="rp-error" class="form-error" hidden role="alert" aria-live="assertive"></div>
+
+            <button type="submit" id="rp-btn" class="btn-submit admin-login-btn">
+              <span class="btn-text">Update Password</span>
+              <span class="btn-loading" hidden aria-live="polite">
+                <span class="spinner" aria-hidden="true"></span>
+                Updating…
+              </span>
+            </button>
+          </form>
+        </div>
+
+        <!-- State: success -->
+        <div id="rp-success" hidden>
+          <h1 class="admin-login-title">Password Updated</h1>
+          <p class="admin-login-sub">
+            Your password has been updated. You can now log in with your new password.
+          </p>
+          <p class="admin-login-sub rp-redirect-msg">
+            Redirecting to login in <span id="rp-countdown">3</span> seconds…
+          </p>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="../../config.js"></script>
+  <script>
+  'use strict';
+
+  var db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  var STATES = ['rp-loading', 'rp-invalid', 'rp-form-wrap', 'rp-success'];
+
+  function showState(id) {
+    STATES.forEach(function (s) {
+      document.getElementById(s).hidden = (s !== id);
+    });
+  }
+
+  function showRpError(msg) {
+    var el = document.getElementById('rp-error');
+    el.textContent = msg;
+    el.hidden = false;
+  }
+
+  function clearRpError() {
+    var el = document.getElementById('rp-error');
+    el.hidden = true;
+    el.textContent = '';
+  }
+
+  function setRpLoading(loading) {
+    var btn  = document.getElementById('rp-btn');
+    btn.querySelector('.btn-text').hidden    = loading;
+    btn.querySelector('.btn-loading').hidden = !loading;
+    btn.disabled = loading;
+  }
+
+  // Supabase processes the URL hash / code param on createClient.
+  // PASSWORD_RECOVERY fires once the session is established.
+  db.auth.onAuthStateChange(function (event) {
+    if (event === 'PASSWORD_RECOVERY') {
+      showState('rp-form-wrap');
+    }
+  });
+
+  // Fallback: if no PASSWORD_RECOVERY event fires within 5 s,
+  // show the invalid-link message (expired OTP or direct navigation).
+  var invalidTimer = setTimeout(function () {
+    var wrap = document.getElementById('rp-form-wrap');
+    var succ = document.getElementById('rp-success');
+    if (wrap.hidden && succ.hidden) {
+      showState('rp-invalid');
+    }
+  }, 5000);
+
+  document.getElementById('rp-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    clearRpError();
+
+    var newPwd     = document.getElementById('rp-new').value;
+    var confirmPwd = document.getElementById('rp-confirm').value;
+
+    if (!newPwd || newPwd.length < 6) {
+      return showRpError('Password must be at least 6 characters.');
+    }
+    if (newPwd !== confirmPwd) {
+      return showRpError("Passwords don't match. Please check and try again.");
+    }
+
+    setRpLoading(true);
+    clearTimeout(invalidTimer);
+
+    var result = await db.auth.updateUser({ password: newPwd });
+    setRpLoading(false);
+
+    if (result.error) {
+      return showRpError('Something went wrong — please try again.');
+    }
+
+    showState('rp-success');
+
+    // Sign out so the user starts fresh when they log back in.
+    await db.auth.signOut();
+
+    // Countdown redirect.
+    var count    = 3;
+    var countEl  = document.getElementById('rp-countdown');
+    countEl.textContent = count;
+
+    var interval = setInterval(function () {
+      count--;
+      countEl.textContent = count;
+      if (count <= 0) {
+        clearInterval(interval);
+        window.location.href = 'https://adminodac.github.io/internal-portal/admin';
+      }
+    }, 1000);
+  });
+  </script>
+
+</body>
+</html>

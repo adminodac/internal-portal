@@ -24,6 +24,7 @@
       </div>
       <div class="admin-header-user" id="admin-header-user" hidden>
         <span id="user-email" class="admin-user-email"></span>
+        <button type="button" id="change-password-btn" class="btn-change-password">Change password</button>
         <button type="button" id="logout-btn" class="btn-logout">Log out</button>
       </div>
     </div>
@@ -60,6 +61,31 @@
             </span>
           </button>
         </form>
+
+        <div class="forgot-link-wrap">
+          <button type="button" id="forgot-toggle" class="btn-forgot-link">Forgot your password?</button>
+        </div>
+
+        <div id="forgot-section" class="forgot-section" hidden>
+          <p class="forgot-section-title">Send a recovery email</p>
+          <form id="forgot-form" novalidate>
+            <div class="field-group">
+              <label class="field-label" for="forgot-email">Email address</label>
+              <input type="email" id="forgot-email" name="forgot-email" class="field-input"
+                     autocomplete="email" placeholder="osoyoosartscouncil@gmail.com">
+            </div>
+            <div id="forgot-error" class="form-error" hidden role="alert" aria-live="assertive"></div>
+            <div id="forgot-success" class="form-success" hidden role="status"></div>
+            <button type="submit" id="forgot-btn" class="btn-submit admin-login-btn">
+              <span class="btn-text">Send recovery email</span>
+              <span class="btn-loading" hidden aria-live="polite">
+                <span class="spinner" aria-hidden="true"></span>
+                Sending…
+              </span>
+            </button>
+          </form>
+        </div>
+
       </div>
     </section>
 
@@ -134,6 +160,42 @@
     </section>
 
   </main>
+
+  <!-- Change password modal -->
+  <div id="cp-overlay" class="cp-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="cp-title">
+    <div class="cp-modal">
+      <div class="cp-modal-header">
+        <h2 id="cp-title" class="cp-modal-title">Change Password</h2>
+        <button type="button" id="cp-close" class="cp-close-btn" aria-label="Close">✕</button>
+      </div>
+      <form id="cp-form" novalidate>
+        <div class="field-group">
+          <label class="field-label" for="cp-current">Current password</label>
+          <input type="password" id="cp-current" class="field-input"
+                 autocomplete="current-password" required>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="cp-new">New password</label>
+          <input type="password" id="cp-new" class="field-input"
+                 autocomplete="new-password" required minlength="6">
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="cp-confirm">Confirm new password</label>
+          <input type="password" id="cp-confirm" class="field-input"
+                 autocomplete="new-password" required minlength="6">
+        </div>
+        <div id="cp-error"   class="form-error"   hidden role="alert"  aria-live="assertive"></div>
+        <div id="cp-success" class="form-success" hidden role="status"></div>
+        <button type="submit" id="cp-btn" class="btn-submit">
+          <span class="btn-text">Update Password</span>
+          <span class="btn-loading" hidden aria-live="polite">
+            <span class="spinner" aria-hidden="true"></span>
+            Updating…
+          </span>
+        </button>
+      </form>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <script src="config.js"></script>
