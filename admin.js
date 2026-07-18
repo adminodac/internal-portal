@@ -810,7 +810,7 @@ async function handleInviteAdmin(e) {
   btn.textContent = 'Send invitation';
 
   if (error || data?.error) {
-    errEl.textContent = data?.error || 'Something went wrong — please try again or contact Francisco.';
+    errEl.textContent = data?.error || error?.message || 'Something went wrong — please try again or contact Francisco.';
     errEl.hidden = false;
     return;
   }
