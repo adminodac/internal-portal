@@ -63,10 +63,12 @@ Deno.serve(async (req: Request) => {
 
     if (error) {
       const msg = error.message ?? ''
-      if (msg.toLowerCase().includes('already registered')) {
+      console.error('inviteUserByEmail failed:', msg, 'status:', (error as any).status)
+      if (msg.toLowerCase().includes('already registered') || msg.toLowerCase().includes('already been registered') || msg.toLowerCase().includes('already exists')) {
         return json({ error: 'An account with that email already exists.' }, 400)
       }
-      return json({ error: 'Could not send the invitation. Please try again.' }, 500)
+      // Surface the real Supabase error so it appears in the UI during debugging
+      return json({ error: msg || 'Could not send the invitation. Please try again.' }, 500)
     }
 
     return json({ success: true })
