@@ -5,7 +5,6 @@
 // Auth: caller must send a valid user JWT in Authorization: Bearer <token>.
 // The service role key (never exposed to frontend) is used only server-side.
 
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const SUPABASE_URL      = Deno.env.get('SUPABASE_URL')!
@@ -25,7 +24,7 @@ function json(data: unknown, status = 200): Response {
   })
 }
 
-serve(async (req: Request) => {
+Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS })
 
   // -- Verify the caller has a valid session ----------------------------
