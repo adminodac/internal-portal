@@ -894,11 +894,6 @@ async function handleChangePassword(e) {
   const newPwd     = document.getElementById('cp-new').value;
   const confirmPwd = document.getElementById('cp-confirm').value;
 
-  if (!currentPwd) {
-    errEl.textContent = 'Please enter your current password.';
-    errEl.hidden = false;
-    return;
-  }
   if (!newPwd || newPwd.length < 6) {
     errEl.textContent = 'New password must be at least 6 characters.';
     errEl.hidden = false;
@@ -922,19 +917,20 @@ async function handleChangePassword(e) {
   btn.querySelector('.btn-loading').hidden = false;
   btn.disabled = true;
 
-  // Verify current password before changing.
-  const { error: signInError } = await db.auth.signInWithPassword({
-    email:    user.email,
-    password: currentPwd
-  });
-
-  if (signInError) {
-    btn.querySelector('.btn-text').hidden    = false;
-    btn.querySelector('.btn-loading').hidden = true;
-    btn.disabled = false;
-    errEl.textContent = 'Your current password is incorrect. Please try again.';
-    errEl.hidden = false;
-    return;
+  // If a current password was provided, verify it before updating.
+  if (currentPwd) {
+    const { error: signInError } = await db.auth.signInWithPassword({
+      email:    user.email,
+      password: currentPwd
+    });
+    if (signInError) {
+      btn.querySelector('.btn-text').hidden    = false;
+      btn.querySelector('.btn-loading').hidden = true;
+      btn.disabled = false;
+      errEl.textContent = 'Your current password is incorrect. Please try again.';
+      errEl.hidden = false;
+      return;
+    }
   }
 
   const { error } = await db.auth.updateUser({ password: newPwd });
